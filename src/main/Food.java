@@ -27,7 +27,7 @@ public class Food {
 		return name[this.id];
 	}
 	public void load () throws IOException {
-		this.sprite = ImageIO.read(getClass().getResourceAsStream(this.path[this.id]));
+		this.sprite = ImageIO.read(getClass().getResourceAsStream(path[this.id]));
 	}
 	
 }

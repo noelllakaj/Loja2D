@@ -16,6 +16,14 @@ public class Vector2 {
 		this.x=vector.x;
 		this.y=vector.y;
 	}
+	public void setEqual(double x, double y) {
+		this.x=x;
+		this.y=y;
+	}
+	public void setEqual(int x, int y) {
+		this.x=x;
+		this.y=y;
+	}
 	
 	public Vector2 add(Vector2 vectorToAdd) {
 		Vector2 temporary = new Vector2();

@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 public class Main {
 	static int tileSize = 32;
 	static int mapX=30,mapY=30;
+	static Vector2 mapSize = new Vector2(mapX,mapY);
 	static int width = tileSize*24, height = tileSize*16; //start frame dimensions 32*24 32*16
 	static Vector2 screenDimensions = new Vector2(width,height);
 	static Vector2 mapSizePixels = new Vector2(tileSize*mapX,tileSize*mapY);
@@ -120,37 +121,28 @@ public class Main {
 
 	
 	private static void loadTiles(BufferedImage[] images) {
-
 	    try {
 	        // Load Tiles folder from resources
 	        URL url = Main.class.getClassLoader().getResource("Tiles");
-
 	        if (url == null) {
 	          //  System.out.println("Tiles folder not found in resources!");
 	            return;
 	        }
-
 	        File folder = new File(url.toURI());
 	        File[] files = folder.listFiles();
-
 	        if (files == null) {
 	          //  System.out.println("No files in Tiles folder!");
 	            return;
 	        }
-
 	        int index = 0;
-
 	        for (File f : files) {
 	            if (f.getName().toLowerCase().endsWith(".png")) {
 	                images[index++] = ImageIO.read(f);
 	              //  System.out.println("Loaded: " + f.getName());
-
 	                if (index >= images.length) break;
 	            }
 	        }
-
 	       // System.out.println("Loaded " + index + " tiles.");
-
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }

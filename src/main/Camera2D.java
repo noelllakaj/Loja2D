@@ -67,65 +67,47 @@ public class Camera2D {
 		//System.out.println(player.idle+" "+ player.walking + " "+player.death+" " + player.idleCFPF +" "+ player.walkingCFPF);
 	}
 	
-	public void drawLine(BufferedImage image) {
-		Vector2 startPoint = new Vector2(400,0);
-		Vector2 endPoint = new Vector2(400,600);
-		Graphics imageGraphics = image.getGraphics();
-		imageGraphics.setColor(Color.BLACK);
-		imageGraphics.drawLine((int)getScreenPosition(startPoint).x, (int)getScreenPosition(startPoint).y,
-							   (int)getScreenPosition(endPoint).x, (int)getScreenPosition(endPoint).y);
-		imageGraphics.dispose();
-		
+	public void renderMap(BufferedImage image, BufferedImage[] tiles, int[][][] map) {
+
+	    Graphics g = image.getGraphics();
+
+	    Vector2 topLeft = position.sub(edgeToCenter);
+	    Vector2 bottomRight = position.add(edgeToCenter);
+
+	    int mapWidth = map.length;
+	    int mapHeight = map[0].length;
+
+	    int startX = (int) Math.floor(topLeft.x / tileSize);
+	    int startY = (int) Math.floor(topLeft.y / tileSize);
+	    int endX   = (int) Math.ceil(bottomRight.x / tileSize);
+	    int endY   = (int) Math.ceil(bottomRight.y / tileSize);
+
+	    // CLAMP TO MAP BOUNDS
+	    startX = Math.max(0, startX);
+	    startY = Math.max(0, startY);
+	    endX   = Math.min(mapWidth, endX);
+	    endY   = Math.min(mapHeight, endY);
+
+	    Vector2 worldPos = new Vector2();
+	    Vector2 screenPos = new Vector2();
+
+	    for (int x = startX; x < endX; x++) {
+	        for (int y = startY; y < endY; y++) {
+
+	            int tileIndex = map[x][y][0];
+	            if (tileIndex < 0 || tileIndex >= tiles.length)
+	                continue;
+
+	            worldPos.setEqual(x * tileSize, y * tileSize);
+	            screenPos.setEqual(getScreenPosition(worldPos));
+
+	            g.drawImage(tiles[tileIndex],(int) screenPos.x,(int) screenPos.y,null);
+	        }
+	    }
+
+	    g.dispose();
 	}
-	
-	public void drawMap(BufferedImage image,int[][][] map,int length) { //optimize
-		Graphics g = image.getGraphics();
-		Vector2 firstPoint = new Vector2();
-		Vector2 sfp = new Vector2();
-		
-		for(int i = 0 ; i<30;i++) {
-			for(int j = 0 ; j < 30 ; j++) {
-				if(map[i][j][1]!=0) {
-				Color color = new Color(map[i][j][0]*12+17,map[i][j][0]*19+35,map[i][j][0]*5+156);
-				g.setColor(color);
-				} else {
-					g.setColor(Color.BLACK);
-				}
-				
-				firstPoint.setEqual(new Vector2(i*length,j*length));
-				sfp.setEqual(getScreenPosition(firstPoint));
-				g.fillRect((int)sfp.x,(int)sfp.y,length,length);
-			}
-		}
-	}
-	public void renderMap(BufferedImage image,BufferedImage[] tiles, int[][][] map) {
-		
-		Vector2 topLeft = this.position.sub(this.edgeToCenter);
-		Vector2 bottomRight = this.position.add(edgeToCenter);
-		
-		int startX = (int)topLeft.x/this.tileSize;
-		int startY = (int)topLeft.y/this.tileSize;
-		int endX = (int) bottomRight.x/this.tileSize+1;
-		int endY = (int) bottomRight.y/this.tileSize+1;
-		
-		if(endX>(int)this.mapSize.x/this.tileSize) 
-			endX-=2;
-		if(endY>(int)this.mapSize.y/this.tileSize) 
-			endY-=2;
-		
-		
-		Graphics g = image.getGraphics();
-		Vector2 firstPoint = new Vector2();
-		Vector2 sfp = new Vector2();
-		for(int i = startX ; i <endX ; i++) {
-			for(int j = startY ; j < endY ; j++) {
-				firstPoint.setEqual(new Vector2(i*32,j*32));
-				sfp.setEqual(getScreenPosition(firstPoint));
-				g.drawImage(tiles[map[i][j][0]],(int)sfp.x,(int)sfp.y,null);
-			}
-		}
-		g.dispose();
-	}
+
 	
 	public void renderFood(BufferedImage image,Food[][] food) {
 		
@@ -137,10 +119,9 @@ public class Camera2D {
 		int endX = (int) bottomRight.x/this.tileSize+1;
 		int endY = (int) bottomRight.y/this.tileSize+1;
 		
-		if(endX>(int)this.mapSize.x/this.tileSize) 
-			endX-=2;
-		if(endY>(int)this.mapSize.y/this.tileSize) 
-			endY-=2;
+		
+		//if(endX>(int)this.mapSize.x/this.tileSize) endX-=1;
+		//if(endY>(int)this.mapSize.y/this.tileSize) endY-=1;
 		
 		Graphics g = image.getGraphics();
 		Vector2 firstPoint = new Vector2();
