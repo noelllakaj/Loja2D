@@ -12,7 +12,7 @@ public class Main {
 	static int tileSize = 32;
 	static int mapX=30,mapY=30;
 	static Vector2 mapSize = new Vector2(mapX,mapY);
-	static int width = tileSize*24, height = tileSize*16; //start frame dimensions 32*24 32*16
+	static int width = tileSize*24, height = tileSize*16; //start frame dimensions 32*24=768 32*16=512
 	static Vector2 screenDimensions = new Vector2(width,height);
 	static Vector2 mapSizePixels = new Vector2(tileSize*mapX,tileSize*mapY);
 	static Food[][] food = new Food[mapX][mapY];

@@ -40,6 +40,9 @@ public class Camera2D {
 		renderPlayer(player);
 		renderFood(food);
 		renderWeapon(player);
+		renderGroundWeapons();
+		renderEnemies();
+		renderHUD(player);
 	}
 	
 	public void followPlayer(Player player) {
@@ -196,6 +199,56 @@ public class Camera2D {
 		weapon.setEqual(getScreenPosition(player.currentWeapon.position));
 		g.drawImage(player.currentWeapon.sprite,(int)weapon.x-16,(int)weapon.y-16,null);
 		g.dispose();
+		
+	}
+	
+	double angle = 0;
+	
+	public void renderHUD(Player player) {
+		Graphics g = renderedFrame.getGraphics();
+		angle+=0.05;
+		
+		
+		
+		g.setColor(Color.DARK_GRAY);
+		g.fillOval(240, 42, 40, 40);
+		g.fillOval(490, 42, 40, 40);
+		g.fillRect(259, 42, 250, 40);
+		
+		g.setColor(Color.getHSBColor(230f, 54.5f, 82.75f));
+		g.fillOval(240, 40, 40, 40);
+		g.fillOval(490, 40, 40, 40);
+		g.fillRect(259, 40, 250, 40);
+		
+		for(int i = 0 ; i < 5 ;i++) {
+			
+			if(player.foodInv[i]!=null) {
+				g.setColor(Color.GRAY.darker());
+				g.fillOval(251+i*60,55,32,24);
+				if(3*Math.sin(angle/5-Math.PI*i/5)-2>0) {
+					
+					g.drawImage(player.foodInv[i].sprite32,251+i*60,(int)(45-(3*Math.sin(angle/5-Math.PI*i/5)-2)*15),null);
+				}else {
+					g.drawImage(player.foodInv[i].sprite32,251+i*60,45,null);
+				}
+				}
+			}
+		
+		
+		
+		g.setColor(Color.DARK_GRAY);
+		g.fillOval(708, 454, 40, 40);
+		g.setColor(Color.getHSBColor(230f, 54.5f, 82.75f));
+		g.fillOval(708, 452, 40, 40);
+		g.drawImage(player.currentWeapon.sprite,712,456, null);
+		
+	}
+	
+	public void renderGroundWeapons() {
+		
+	}
+	
+	public void renderEnemies() {
 		
 	}
 

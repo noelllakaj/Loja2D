@@ -10,7 +10,7 @@ public class Weapon {
     public int damage;
     public BufferedImage sprite;
     public Vector2 position = new Vector2();
-    public Vector2 targetPosition = new Vector2();
+    private Vector2 targetPosition = new Vector2();
     private double angle = 0;
 
     static String[] names = {
@@ -55,35 +55,4 @@ public class Weapon {
     	case 3 : this.targetPosition.setEqual(player.position.add(new Vector2(-offset,offset1*Math.sin(angle)))); break;
     	}
     }
-
-
-// e shton te playeri ket
-Inventory inventory = new Inventory(5);
-Weapon equippedWeapon;
-int selectedSlot = 0;
-
-
-//per me ndrruar armet
-public void switchWeapon(KeyHandler keyH) {
-
-  //  if (keyH.key1) selectedSlot = 0;
-   // if (keyH.key2) selectedSlot = 1;
-    ///if (keyH.key3) selectedSlot = 2;
-  //if (keyH.key4) selectedSlot = 3;
-  //if (keyH.key5) selectedSlot = 4;
-
-    Weapon w = inventory.getWeapon(selectedSlot);
-    if (w != null) {
-        equippedWeapon = w;
-    }
-}
-
-
-
-//damage
-public int getDamage() {
-    if (equippedWeapon != null)
-        return equippedWeapon.damage;
-    return 1; // default damage
-	}
 }
