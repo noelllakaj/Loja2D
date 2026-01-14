@@ -33,6 +33,7 @@ public class Main {
 		Random rand = new Random();
 		
 		int id;
+		
 		for(int i = 0 ; i < mapX ; i++) {
 			for(int j = 0 ; j < mapY; j++) {
 				id = rand.nextInt(50);
