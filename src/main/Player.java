@@ -13,6 +13,7 @@ public class Player extends Entity{
 	int mapX,mapY; // map size
 	boolean[][] obstacles;
 	Food[] foodInv = new Food[5];
+	Weapon currentWeapon = new Weapon(0);
 	
 	public Player(Vector2 position,int tileSize,int mapX,int mapY) {
 		this.health = 3;
