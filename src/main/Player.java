@@ -15,7 +15,7 @@ public class Player extends Entity{
 	Food[] foodInv = new Food[5];
 	Weapon currentWeapon = new Weapon(0);
 	
-	public Player(Vector2 position,int tileSize,int mapX,int mapY) {
+	public Player(Vector2 position,int tileSize,int mapX,int mapY,int[][][] map) {
 		this.health = 3;
 		this.position.setEqual(position);
 		this.targetPosition.setEqual(position);
@@ -25,6 +25,7 @@ public class Player extends Entity{
 		this.mapY = mapY;
 		this.obstacles = new boolean[mapX][mapY];
 		this.loadAnimations();
+		this.getObstacles(map);
 	}
 	
 	public void loadAnimations() {

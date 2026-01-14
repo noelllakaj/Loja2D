@@ -1,16 +1,11 @@
 package main;
 
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Random;
-
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class Main {
@@ -26,8 +21,6 @@ public class Main {
 		
 		int[][][] map = new int[mapX][mapY][2];	
 		loadMapFromText("map.txt", map);
-		BufferedImage[] tiles = new BufferedImage[128];
-		loadTiles(tiles);
 		
 		JFrame frame = initiateFrame(width,height); //create frame
 		
@@ -36,9 +29,9 @@ public class Main {
 		frame.addKeyListener(keyH); //add key handler
 		
 		Camera2D camera = new Camera2D(screenDimensions.multiplyC(0.5),screenDimensions,mapSizePixels); // create camera mid-screen frame dimensions
-		Player player = new Player(new Vector2(144,144),tileSize,mapX,mapY);//create player at 16,16
-		player.getObstacles(map);
+		Player player = new Player(new Vector2(144,144),tileSize,mapX,mapY,map);//create player at 16,16
 		Random rand = new Random();
+		
 		int id;
 		for(int i = 0 ; i < mapX ; i++) {
 			for(int j = 0 ; j < mapY; j++) {
@@ -50,14 +43,10 @@ public class Main {
 		
 
 		while (true) {
-			
-		    camera.followPlayer(player);
-		    player.move(keyH);
+			player.move(keyH);
 		    player.interact(keyH,food);
 		    player.lerp();
-		    camera.renderMap(tiles, map);
-		    camera.renderPlayer(player);
-		    camera.renderFood(food);
+			camera.render(player, keyH, food,map);
 		    g.drawImage(camera.renderedFrame,0,0,null);
 
 		}
@@ -118,32 +107,4 @@ public class Main {
 	}
 
 	
-	private static void loadTiles(BufferedImage[] images) {
-	    try {
-	        // Load Tiles folder from resources
-	        URL url = Main.class.getClassLoader().getResource("Tiles");
-	        if (url == null) {
-	          //  System.out.println("Tiles folder not found in resources!");
-	            return;
-	        }
-	        File folder = new File(url.toURI());
-	        File[] files = folder.listFiles();
-	        if (files == null) {
-	          //  System.out.println("No files in Tiles folder!");
-	            return;
-	        }
-	        int index = 0;
-	        for (File f : files) {
-	            if (f.getName().toLowerCase().endsWith(".png")) {
-	                images[index++] = ImageIO.read(f);
-	              //  System.out.println("Loaded: " + f.getName());
-	                if (index >= images.length) break;
-	            }
-	        }
-	       // System.out.println("Loaded " + index + " tiles.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	}
-
 }

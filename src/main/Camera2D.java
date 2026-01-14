@@ -35,6 +35,8 @@ public class Camera2D {
 	public void render(Player player,KeyHandler keyH,Food[][] food, int[][][] map) {
 		followPlayer(player);
 		renderMap(tileSprites,map);
+		renderPlayer(player);
+		renderFood(food);
 	}
 	
 	public void followPlayer(Player player) {
