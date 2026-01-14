@@ -33,31 +33,41 @@ public class Player extends Entity{
 		super.walkingAnimation = new BufferedImage[4][4];
 		super.deathAnimation = new BufferedImage[4][4];
 		try {
-			super.idleAnimation[0][0] =  load("/Player/Idle/upIdle1.png");
-			super.idleAnimation[0][1] =  load("/Player/Idle/upIdle2.png");
-			super.idleAnimation[1][0] =  ImageIO.read(getClass().getResourceAsStream("/Player/Idle/leftIdle1.png"));
-			super.idleAnimation[1][1] =  ImageIO.read(getClass().getResourceAsStream("/Player/Idle/leftIdle2.png"));
-			super.idleAnimation[2][0] =  ImageIO.read(getClass().getResourceAsStream("/Player/Idle/downIdle1.png"));
-			super.idleAnimation[2][1] =  ImageIO.read(getClass().getResourceAsStream("/Player/Idle/downIdle2.png"));
-			super.idleAnimation[3][0] =  ImageIO.read(getClass().getResourceAsStream("/Player/Idle/rightIdle1.png"));
-			super.idleAnimation[3][1] =  ImageIO.read(getClass().getResourceAsStream("/Player/Idle/rightIdle2.png"));
-			
-			super.walkingAnimation[0][0] =  load("/Player/Walking/upWalk (1).png");
-			super.walkingAnimation[0][1] =  load("/Player/Walking/upWalk (2).png");
-			super.walkingAnimation[0][2] =  load("/Player/Walking/upWalk (3).png");
-			super.walkingAnimation[0][3] =  load("/Player/Walking/upWalk (4).png");
-			super.walkingAnimation[1][0] =  load("/Player/Walking/leftWalk (1).png");
-			super.walkingAnimation[1][1] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/leftWalk (2).png"));
-			super.walkingAnimation[1][2] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/leftWalk (3).png"));
-			super.walkingAnimation[1][3] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/leftWalk (4).png"));
-			super.walkingAnimation[2][0] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/downWalk (1).png"));
-			super.walkingAnimation[2][1] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/downWalk (2).png"));
-			super.walkingAnimation[2][2] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/downWalk (3).png"));
-			super.walkingAnimation[2][3] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/downWalk (4).png"));
-			super.walkingAnimation[3][0] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/rightWalk (1).png"));
-			super.walkingAnimation[3][1] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/rightWalk (2).png"));
-			super.walkingAnimation[3][2] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/rightWalk (3).png"));
-			super.walkingAnimation[3][3] =  ImageIO.read(getClass().getResourceAsStream("/Player/Walking/rightWalk (4).png"));
+			// IDLE ANIMATIONS
+			super.idleAnimation[0][0] = load("/Player/Idle/upIdle1.png");
+			super.idleAnimation[0][1] = load("/Player/Idle/upIdle2.png");
+
+			super.idleAnimation[1][0] = load("/Player/Idle/leftIdle1.png");
+			super.idleAnimation[1][1] = load("/Player/Idle/leftIdle2.png");
+
+			super.idleAnimation[2][0] = load("/Player/Idle/downIdle1.png");
+			super.idleAnimation[2][1] = load("/Player/Idle/downIdle2.png");
+
+			super.idleAnimation[3][0] = load("/Player/Idle/rightIdle1.png");
+			super.idleAnimation[3][1] = load("/Player/Idle/rightIdle2.png");
+
+
+			// WALKING ANIMATIONS
+			super.walkingAnimation[0][0] = load("/Player/Walking/upWalk (1).png");
+			super.walkingAnimation[0][1] = load("/Player/Walking/upWalk (2).png");
+			super.walkingAnimation[0][2] = load("/Player/Walking/upWalk (3).png");
+			super.walkingAnimation[0][3] = load("/Player/Walking/upWalk (4).png");
+
+			super.walkingAnimation[1][0] = load("/Player/Walking/leftWalk (1).png");
+			super.walkingAnimation[1][1] = load("/Player/Walking/leftWalk (2).png");
+			super.walkingAnimation[1][2] = load("/Player/Walking/leftWalk (3).png");
+			super.walkingAnimation[1][3] = load("/Player/Walking/leftWalk (4).png");
+
+			super.walkingAnimation[2][0] = load("/Player/Walking/downWalk (1).png");
+			super.walkingAnimation[2][1] = load("/Player/Walking/downWalk (2).png");
+			super.walkingAnimation[2][2] = load("/Player/Walking/downWalk (3).png");
+			super.walkingAnimation[2][3] = load("/Player/Walking/downWalk (4).png");
+
+			super.walkingAnimation[3][0] = load("/Player/Walking/rightWalk (1).png");
+			super.walkingAnimation[3][1] = load("/Player/Walking/rightWalk (2).png");
+			super.walkingAnimation[3][2] = load("/Player/Walking/rightWalk (3).png");
+			super.walkingAnimation[3][3] = load("/Player/Walking/rightWalk (4).png");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

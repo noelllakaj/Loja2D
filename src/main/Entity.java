@@ -4,9 +4,11 @@ import java.awt.image.BufferedImage;
 
 public class Entity {
 	boolean idle,walking,death;
+	
 	int direction=2,currentFrame=0; //0-up 1-left 2-down 3-right
 	int idleFPF = 30,walkingFPF = 30,deathFPF = 10;
 	int idleCFPF=0,walkingCFPF=0,deathCFPF=0;
+	
 	BufferedImage idleAnimation[][];
 	BufferedImage walkingAnimation[][];
 	BufferedImage deathAnimation[][];

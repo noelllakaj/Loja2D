@@ -19,6 +19,7 @@ public class Camera2D {
 	Matrix2 startEnd;
 	BufferedImage renderedFrame;
 	static BufferedImage[] tileSprites = new BufferedImage[128];
+	//Graphics graphics;
 		
 	public Camera2D() {}
 	
@@ -30,6 +31,7 @@ public class Camera2D {
 		this.mapSizePixels.setEqual(mapSize);
 		this.renderedFrame  = new BufferedImage((int)dimensions.x, (int)dimensions.y, BufferedImage.TYPE_INT_ARGB);
 		loadTiles(tileSprites);
+		//graphics = renderedFrame.getGraphics();
 	}
 	
 	public void render(Player player,KeyHandler keyH,Food[][] food, int[][][] map) {
@@ -37,6 +39,7 @@ public class Camera2D {
 		renderMap(tileSprites,map);
 		renderPlayer(player);
 		renderFood(food);
+		renderWeapon(player);
 	}
 	
 	public void followPlayer(Player player) {
@@ -73,7 +76,7 @@ public class Camera2D {
 		playerScreenPosition.setEqual(getScreenPosition(player.position)); //screen position of player
 		
 		Graphics imageGraphics = this.renderedFrame.getGraphics();
-		imageGraphics.setColor(Color.RED);
+		//imageGraphics.setColor(Color.RED);
 		//imageGraphics.fillOval((int)playerScreenPosition.x-16,(int)playerScreenPosition.y-16,32,32);
 		imageGraphics.drawImage(player.getCurrentFrame(), (int)playerScreenPosition.x-16, (int)playerScreenPosition.y-16, null);
 
@@ -184,6 +187,16 @@ public class Camera2D {
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
+	}
+	public void renderWeapon(Player player) {
+		Graphics g = renderedFrame.getGraphics();
+		Vector2 weapon = new Vector2();
+		player.currentWeapon.updateTargetPos(player);
+		player.currentWeapon.updatePos();
+		weapon.setEqual(getScreenPosition(player.currentWeapon.position));
+		g.drawImage(player.currentWeapon.sprite,(int)weapon.x-16,(int)weapon.y-16,null);
+		g.dispose();
+		
 	}
 
 }
