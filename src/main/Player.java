@@ -24,6 +24,7 @@ public class Player extends Entity{
 		this.mapX = mapX;
 		this.mapY = mapY;
 		this.obstacles = new boolean[mapX][mapY];
+		this.loadAnimations();
 	}
 	
 	public void loadAnimations() {

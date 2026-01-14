@@ -29,7 +29,6 @@ public class Main {
 		BufferedImage[] tiles = new BufferedImage[128];
 		loadTiles(tiles);
 		
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB); //image to use for rendering
 		JFrame frame = initiateFrame(width,height); //create frame
 		
 		Graphics g = frame.getGraphics();
@@ -49,7 +48,6 @@ public class Main {
 			}
 		}
 		
-		player.loadAnimations();
 
 		while (true) {
 			
@@ -57,11 +55,11 @@ public class Main {
 		    player.move(keyH);
 		    player.interact(keyH,food);
 		    player.lerp();
-		    camera.renderMap(image, tiles, map);
-		    camera.renderPlayer(image, player);
-		    camera.renderFood(image, food);
-		    g.drawImage(image,0,0,null);
-		    
+		    camera.renderMap(tiles, map);
+		    camera.renderPlayer(player);
+		    camera.renderFood(food);
+		    g.drawImage(camera.renderedFrame,0,0,null);
+
 		}
 	}
 	

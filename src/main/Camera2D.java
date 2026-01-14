@@ -2,17 +2,23 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
 
 
 public class Camera2D {
 	Vector2 position = new Vector2();
 	Vector2 targetPosition = new Vector2();
 	Vector2 dimensions = new Vector2();
-	Vector2 mapSize = new Vector2();
+	Vector2 mapSizePixels = new Vector2();
 	boolean followingPlayer = true;
 	Vector2 edgeToCenter = new Vector2();
 	int tileSize = 32;
 	Matrix2 startEnd;
+	BufferedImage renderedFrame;
+	static BufferedImage[] tileSprites = new BufferedImage[128];
 		
 	public Camera2D() {}
 	
@@ -21,8 +27,14 @@ public class Camera2D {
 		this.dimensions.setEqual(dimensions);
 		this.targetPosition.setEqual(position);
 		this.edgeToCenter.setEqual(dimensions.multiplyC(0.5));
-		this.mapSize.setEqual(mapSize);
-
+		this.mapSizePixels.setEqual(mapSize);
+		this.renderedFrame  = new BufferedImage((int)dimensions.x, (int)dimensions.y, BufferedImage.TYPE_INT_ARGB);
+		loadTiles(tileSprites);
+	}
+	
+	public void render(Player player,KeyHandler keyH,Food[][] food, int[][][] map) {
+		followPlayer(player);
+		renderMap(tileSprites,map);
 	}
 	
 	public void followPlayer(Player player) {
@@ -32,12 +44,12 @@ public class Camera2D {
 	    // clamp X
 	    double halfW = this.dimensions.x / 2;
 	    if (target.x < halfW) target.x = halfW;
-	    if (target.x > this.mapSize.x - halfW) target.x = this.mapSize.x - halfW;
+	    if (target.x > this.mapSizePixels.x - halfW) target.x = this.mapSizePixels.x - halfW;
 
 	    // clamp Y
 	    double halfH = this.dimensions.y / 2;
 	    if (target.y < halfH) target.y = halfH;
-	    if (target.y > this.mapSize.y - halfH) target.y = this.mapSize.y - halfH;
+	    if (target.y > this.mapSizePixels.y - halfH) target.y = this.mapSizePixels.y - halfH;
 
 	    // apply new position
 	    this.position.setEqual(target);
@@ -53,12 +65,12 @@ public class Camera2D {
 		return screenPos;
 	}
 	
-	public void renderPlayer(BufferedImage image, Player player) {
+	public void renderPlayer( Player player) {
 		
 		Vector2 playerScreenPosition = new Vector2();
 		playerScreenPosition.setEqual(getScreenPosition(player.position)); //screen position of player
 		
-		Graphics imageGraphics = image.getGraphics();
+		Graphics imageGraphics = this.renderedFrame.getGraphics();
 		imageGraphics.setColor(Color.RED);
 		//imageGraphics.fillOval((int)playerScreenPosition.x-16,(int)playerScreenPosition.y-16,32,32);
 		imageGraphics.drawImage(player.getCurrentFrame(), (int)playerScreenPosition.x-16, (int)playerScreenPosition.y-16, null);
@@ -67,9 +79,9 @@ public class Camera2D {
 		//System.out.println(player.idle+" "+ player.walking + " "+player.death+" " + player.idleCFPF +" "+ player.walkingCFPF);
 	}
 	
-	public void renderMap(BufferedImage image, BufferedImage[] tiles, int[][][] map) {
+	public void renderMap( BufferedImage[] tiles, int[][][] map) {
 
-	    Graphics g = image.getGraphics();
+	    Graphics g = this.renderedFrame.getGraphics();
 
 	    Vector2 topLeft = position.sub(edgeToCenter);
 	    Vector2 bottomRight = position.add(edgeToCenter);
@@ -90,7 +102,9 @@ public class Camera2D {
 
 	    Vector2 worldPos = new Vector2();
 	    Vector2 screenPos = new Vector2();
-
+	    
+	    //System.out.println(endX + " " + endY);
+	    ;
 	    for (int x = startX; x < endX; x++) {
 	        for (int y = startY; y < endY; y++) {
 
@@ -109,21 +123,26 @@ public class Camera2D {
 	}
 
 	
-	public void renderFood(BufferedImage image,Food[][] food) {
+	public void renderFood(Food[][] food) {
 		
 		Vector2 topLeft = this.position.sub(this.edgeToCenter);
 		Vector2 bottomRight = this.position.add(edgeToCenter);
 		
-		int startX = (int)topLeft.x/this.tileSize;
-		int startY = (int)topLeft.y/this.tileSize;
-		int endX = (int) bottomRight.x/this.tileSize+1;
-		int endY = (int) bottomRight.y/this.tileSize+1;
+		 int mapWidth = food.length;
+		    int mapHeight = food[0].length;
+
+		    int startX = (int) Math.floor(topLeft.x / tileSize);
+		    int startY = (int) Math.floor(topLeft.y / tileSize);
+		    int endX   = (int) Math.ceil(bottomRight.x / tileSize);
+		    int endY   = (int) Math.ceil(bottomRight.y / tileSize);
+
+		    // CLAMP TO MAP BOUNDS
+		    startX = Math.max(0, startX);
+		    startY = Math.max(0, startY);
+		    endX   = Math.min(mapWidth, endX);
+		    endY   = Math.min(mapHeight, endY);
 		
-		
-		//if(endX>(int)this.mapSize.x/this.tileSize) endX-=1;
-		//if(endY>(int)this.mapSize.y/this.tileSize) endY-=1;
-		
-		Graphics g = image.getGraphics();
+		Graphics g = this.renderedFrame.getGraphics();
 		Vector2 firstPoint = new Vector2();
 		Vector2 sfp = new Vector2();
 		for(int i = startX ; i < endX ; i++) {
@@ -136,4 +155,33 @@ public class Camera2D {
 		}
 		g.dispose();
 	}
+	
+	private static void loadTiles(BufferedImage[] images) {
+	    try {
+	        // Load Tiles folder from resources
+	        URL url = Main.class.getClassLoader().getResource("Tiles");
+	        if (url == null) {
+	          //  System.out.println("Tiles folder not found in resources!");
+	            return;
+	        }
+	        File folder = new File(url.toURI());
+	        File[] files = folder.listFiles();
+	        if (files == null) {
+	          //  System.out.println("No files in Tiles folder!");
+	            return;
+	        }
+	        int index = 0;
+	        for (File f : files) {
+	            if (f.getName().toLowerCase().endsWith(".png")) {
+	                images[index++] = ImageIO.read(f);
+	              //  System.out.println("Loaded: " + f.getName());
+	                if (index >= images.length) break;
+	            }
+	        }
+	       // System.out.println("Loaded " + index + " tiles.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 }
