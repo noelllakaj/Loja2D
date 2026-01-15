@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,12 +43,14 @@ public class Main {
 			}
 		}
 		
+		HUD hud = new HUD();
 
 		while (true) {
 			player.move(keyH);
 		    player.interact(keyH,food);
 		    player.lerp();
 			camera.render(player, keyH, food,map);
+			hud.draw((Graphics2D)camera.renderedFrame.getGraphics(), player);
 		    g.drawImage(camera.renderedFrame,0,0,null);
 
 		}

@@ -14,9 +14,10 @@ public class Player extends Entity{
 	boolean[][] obstacles;
 	Food[] foodInv = new Food[5];
 	Weapon currentWeapon = new Weapon(0);
+	public int maxHealth = 5;
 	
 	public Player(Vector2 position,int tileSize,int mapX,int mapY,int[][][] map) {
-		this.health = 3;
+		this.health = 5;
 		this.position.setEqual(position);
 		this.targetPosition.setEqual(position);
 		this.gridPosition.setEqual(new Vector2((int)this.position.x/32,(int)this.position.y/32));
