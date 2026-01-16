@@ -17,6 +17,8 @@ public class Main {
 	static Vector2 screenDimensions = new Vector2(width,height);
 	static Vector2 mapSizePixels = new Vector2(tileSize*mapX,tileSize*mapY);
 	static Food[][] food = new Food[mapX][mapY];
+	
+
 
 	public static void main(String[] args) {
 		
@@ -32,6 +34,20 @@ public class Main {
 		Camera2D camera = new Camera2D(screenDimensions.multiplyC(0.5),screenDimensions,mapSizePixels); // create camera mid-screen frame dimensions
 		Player player = new Player(new Vector2(144,144),tileSize,mapX,mapY,map);//create player at 16,16
 		Random rand = new Random();
+		
+		Enemy[] enemies = new Enemy[3];
+		
+		for (int i = 0; i < enemies.length; i++) {
+		    enemies[i] = new Enemy(
+		        new Vector2(64 + i * 64, 64),
+		        tileSize,
+		        mapX,
+		        mapY,
+		        player.obstacles
+		    );
+		}
+
+		
 		
 		int id;
 		
@@ -49,11 +65,17 @@ public class Main {
 			player.move(keyH);
 		    player.interact(keyH,food);
 		    player.lerp();
-			camera.render(player, keyH, food,map);
+		    //enemy updates
+		    for (Enemy e : enemies) {
+		        e.update(player);
+		    }
+		    camera.render(player, keyH, food, map, enemies);
+
 			hud.draw((Graphics2D)camera.renderedFrame.getGraphics(), player);
 		    g.drawImage(camera.renderedFrame,0,0,null);
 
 		}
+		
 	}
 	
 	public static JFrame initiateFrame(int width,int height) {
@@ -110,5 +132,4 @@ public class Main {
 	    }
 	}
 
-	
 }

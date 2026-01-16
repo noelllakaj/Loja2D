@@ -34,17 +34,36 @@ public class Camera2D {
 		//graphics = renderedFrame.getGraphics();
 	}
 	
-	public void render(Player player,KeyHandler keyH,Food[][] food, int[][][] map) {
+	public void render(Player player, KeyHandler keyH, Food[][] food, int[][][] map, Enemy[] enemies) {
+	    renderEnemies(enemies); 
 		followPlayer(player);
-		renderMap(tileSprites,map);
-		renderPlayer(player);
-		renderFood(food);
-		renderWeapon(player);
-		renderGroundWeapons();
-		renderEnemies();
-		renderHUD(player);
+	    renderMap(tileSprites,map);
+	    renderFood(food);
+	    renderWeapon(player);
+	    renderGroundWeapons();
+	    renderHUD(player);
 	}
+
 	
+	public void renderEnemies(Enemy[] enemies) {
+
+	    Graphics g = renderedFrame.getGraphics();
+
+	    for (Enemy e : enemies) {
+	        if (e.death) continue; // skip dead enemies
+
+	        Vector2 screenPos = getScreenPosition(e.position);
+	        g.drawImage(
+	            e.getCurrentFrame(),
+	            (int)screenPos.x - 16, // center sprite
+	            (int)screenPos.y - 16,
+	            null
+	        );
+	    }
+
+	    g.dispose();
+	}
+
 	public void followPlayer(Player player) {
 	    // desired new position
 	    Vector2 target = this.position.add(player.position.sub(this.position).multiplyC(0.1));
