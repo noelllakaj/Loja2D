@@ -39,9 +39,9 @@ public class HUD {
      //   g2.drawRect(x - 5, y - 5, heartBackgroundWidth, heartBackgroundHeight);
 
         for (int i = 0; i < player.maxHealth; i++) {
-            if (player.health >= i + 1) {
+            if (Player.health >= i + 1) {
                 g2.drawImage(heartFull, x + i * (heartSize + heartSpacing), y, heartSize, heartSize, null);
-            } else if (player.health > i && player.health < i + 1) {
+            } else if (Player.health > i && Player.health < i + 1) {
                 g2.drawImage(heartHalf, x + i * (heartSize + heartSpacing), y, heartSize, heartSize, null);
             } else {
                 g2.drawImage(heartBlank, x + i * (heartSize + heartSpacing), y, heartSize, heartSize, null);

@@ -3,7 +3,9 @@ package main;
 import java.awt.image.BufferedImage;
 
 public class Entity {
-	boolean idle,walking,death,deathAnimationFinished = false;
+	boolean idle,walking,death;
+	static boolean playerMoved = false;
+	static boolean deathAnimationFinished = false;
 	
 	
 	public enum directions{ //0-up 1-left 2-down 3-right
@@ -25,18 +27,25 @@ public class Entity {
 	
 	
 	public BufferedImage getCurrentFrame() {
-		if(death) {
-			deathCFPF++;
-			if(deathCFPF==deathFPF) {
-				currentFrame++;
-				deathCFPF=0;
-			}
-			if(currentFrame>=idleAnimation[0].length) {
-				currentFrame=0;
-				deathAnimationFinished= true;
-			}
-				
-			return deathAnimation[direction.ordinal()][currentFrame];
+		if (death) {
+
+		    if (!deathAnimationFinished) {
+		        deathCFPF++;
+
+		        if (deathCFPF >= deathFPF) {
+		            deathCFPF = 0;
+		            currentFrame++;
+		        }
+
+		        if (currentFrame >= deathAnimation[0].length - 1) {
+		            currentFrame = deathAnimation[0].length - 1;
+		            deathAnimationFinished = true;
+		        }
+		    }
+
+		    return deathAnimation[direction.ordinal()][currentFrame];
+		
+
 			
 		} else if(walking) {
 			walkingCFPF++;

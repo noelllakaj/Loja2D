@@ -1,29 +1,30 @@
 package main;
 
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class Enemy extends Entity {
+	
+	public static Enemy[][] enemyArray;
+	public static Enemy[] enemyList;
+	
 
     Vector2 position = new Vector2();
     Vector2 gridPosition = new Vector2();
     Vector2 targetPosition = new Vector2();
 
-    int tileSize;
-    int mapX, mapY;
-    boolean[][] obstacles;
+    static int tileSize = 32;
+    static int mapX, mapY;
+    static boolean[][] obstacles;
 
     int damage = 1;
-    int attackCooldown = 300;
+    int attackCooldown = 500;
     int attackTimer = 0;
     
     boolean dead = false;
 
-    public Enemy(Vector2 startPos, int tileSize, int mapX, int mapY, boolean[][] obstacles) {
-        this.tileSize = tileSize;
-        this.mapX = mapX;
-        this.mapY = mapY;
-        this.obstacles = obstacles;
-
+    public Enemy(Vector2 startPos) {
+        
         this.position.setEqual(startPos);
         this.targetPosition.setEqual(startPos);
         this.gridPosition.setEqual(
@@ -31,31 +32,68 @@ public class Enemy extends Entity {
         );
 
         idle = true;
+        
         loadAnimations();
     }
-
-    public void update(Player player) {
-        if (death) return;
-
-      //  moveTowardsPlayer(player);
-        lerp();
-        attack(player);
+    
+    public static void spawnEnemies(int toSpawn,boolean[][] passedObstacles) {
+    	
+    	obstacles = passedObstacles;
+    	
+    	mapX = passedObstacles.length;
+    	mapY = passedObstacles[0].length;
+    	
+    	Random random = new Random();
+    	int spawnGridX,spawnGridY;
+    	
+    	enemyList = new Enemy[toSpawn];
+    	enemyArray = new Enemy[obstacles.length][obstacles[0].length];
+    	
+    	for(int i = 0 ; i < toSpawn ; i++) {
+    		for(;;) {
+    			spawnGridX = random.nextInt(30);
+        		spawnGridY = random.nextInt(30);
+        		
+        		if(obstacles[spawnGridX][spawnGridY] == false 
+        		  && enemyArray[spawnGridX][spawnGridY] == null) {
+        			Vector2 startPos = new Vector2(spawnGridX,spawnGridY).multiplyC(tileSize);
+        			
+        			enemyList[i] = new Enemy(startPos);
+        			enemyArray[spawnGridX][spawnGridY] = enemyList[i];	
+        			enemyList[i].damage = random.nextInt(6);
+        			break;
+        		}
+    		}
+    	}
     }
 
-    public void moveTowardsPlayer(Player player) {
+    public static void update(Player player) {
+    	if(playerMoved)
+    		moveTowardsPlayer(player);
+        for(Enemy e : enemyList) {
+        	if(e.death==false) {
+        		e.lerp();
+        		e.attack(player);
+        	}
+        }
+        if(playerMoved) playerMoved = false;
+    }
 
-        if (!isAtTarget()) return;
+    public static void moveTowardsPlayer(Player player) {
+    	for(Enemy enemy : enemyList) {
+        if (!enemy.isAtTarget()) return;
 
-        int dx = (int)(player.gridPosition.x - gridPosition.x);
-        int dy = (int)(player.gridPosition.y - gridPosition.y);
+        int dx = (int)(player.gridPosition.x - enemy.gridPosition.x);
+        int dy = (int)(player.gridPosition.y - enemy.gridPosition.y);
 
         if (Math.abs(dx) > Math.abs(dy)) {
-            if (tryMove(sign(dx), 0) == 0)
-                tryMove(0, sign(dy));
+            if (enemy.tryMove(enemy.sign(dx), 0) == 0)
+            	enemy.tryMove(0, enemy.sign(dy));
         } else {
-            if (tryMove(0, sign(dy)) == 0)
-                tryMove(sign(dx), 0);
+            if (enemy.tryMove(0, enemy.sign(dy)) == 0)
+            	enemy.tryMove(enemy.sign(dx), 0);
         }
+    }
     }
 
     private int sign(int v) {
@@ -129,7 +167,7 @@ public class Enemy extends Entity {
             attackTimer--;
             return;
         }
-        if(damage <= player.currentWeapon.damage) {
+        if(damage <= Player.currentWeapon.damage) {
        	super.death = true;
         	return;
         }
@@ -138,7 +176,9 @@ public class Enemy extends Entity {
         attackTimer = attackCooldown;
     }
 
-
+    public static void generateEnemies(int[][][] map) {
+    	enemyArray = new Enemy[map.length][map[0].length];
+    }
 
     public void loadAnimations() {
 		super.idleAnimation = new BufferedImage[4][5];

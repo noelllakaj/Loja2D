@@ -2,8 +2,10 @@ package main;
 
 import java.awt.image.BufferedImage;
 
+import javax.swing.JFrame;
+
 public class Player extends Entity{
-	int health=5;
+	static int health=5;
 	Vector2 position = new Vector2();
 	Vector2 gridPosition = new Vector2();
 	Vector2 targetPosition = new Vector2();
@@ -11,32 +13,34 @@ public class Player extends Entity{
 	int mapX,mapY; // map size
 	boolean[][] obstacles;
 	Food[] foodInv = new Food[5];  int selectedSlot = -1;
-	Weapon currentWeapon = new Weapon(0);
+	static Weapon currentWeapon = new Weapon(0);
 	public int maxHealth = 5;
 	int hasMoved=0;
 	
-	public Player(Vector2 position,int tileSize,int mapX,int mapY,int[][][] map) {
-		this.health = 5;
+	public Player(Vector2 position,int tileSize,int[][][] map) {
 		this.position.setEqual(position);
 		this.targetPosition.setEqual(position);
 		this.gridPosition.setEqual(new Vector2((int)this.position.x/32,(int)this.position.y/32));
 		this.tileSize = tileSize;
-		this.mapX = mapX;
-		this.mapY = mapY;
+		
+		this.mapX = map.length;
+		this.mapY = map[0].length;
 		this.obstacles = new boolean[mapX][mapY];
-		this.loadAnimations();
 		this.getObstacles(map);
+		
+		this.loadAnimations();
+		
 		
 	}
 	
-	public int Update(KeyHandler keyH,Food[][] food) {
-		
-		hasMoved = move(keyH);
-		
+	public void Update(KeyHandler keyH,Food[][] food) {
+		if(Player.deathAnimationFinished) System.exit(0);
+		if(super.death != true) {
+		move(keyH);
 	    interact(keyH,food);
 	    eatingFruits(keyH);
 	    lerp();
-	    return hasMoved;
+		}
 	}
 	
 	private void eatingFruits(KeyHandler keyH) {
@@ -99,7 +103,7 @@ public class Player extends Entity{
 	    if (distance == 0)
 	        return;
 
-	    float speed = 0.5f; // units per frame (CHANGE THIS)
+	    float speed = 0.6f; // units per frame (CHANGE THIS)
 
 	    if (distance <= speed) {
 	        position.setEqual(targetPosition);
@@ -110,13 +114,13 @@ public class Player extends Entity{
 	    position.setEqual(position.add(direction.multiplyC(speed)));
 	}
 	
-	public int move(KeyHandler keyHandler) { //returns 1 if player moves and 0 otherwise
+	public void move(KeyHandler keyHandler) { //returns 1 if player moves and 0 otherwise
 		
 		if(health<=0) {
 			super.idle=false;
 			super.walking = false;
 			super.death = true;
-			return 0;
+			return ;
 		}
 		
 		boolean temp;
@@ -136,7 +140,8 @@ public class Player extends Entity{
 				this.targetPosition.x = this.gridPosition.x*tileSize+15;
 				super.idle=false;
 				super.direction = directions.left;
-				return 1;
+				playerMoved = true;
+				return;
 			}
 		}
 		
@@ -146,7 +151,8 @@ public class Player extends Entity{
 			this.targetPosition.y = this.gridPosition.y*tileSize+15;//+ tile offset
 			super.idle=false;
 			super.direction = directions.up;
-			return 1;
+			playerMoved = true;
+			return ;
 			}
 		}
 		
@@ -156,7 +162,8 @@ public class Player extends Entity{
 				this.targetPosition.x = this.gridPosition.x*tileSize+15;
 				super.idle=false;
 				super.direction = directions.right;
-				return 1;
+				playerMoved = true;
+				return ;
 			}
 		}
 		
@@ -166,16 +173,17 @@ public class Player extends Entity{
 				this.targetPosition.y = this.gridPosition.y*tileSize+15;
 				super.idle=false;
 				super.direction = directions.down;
-				return 1;
+				playerMoved = true;
+				return ;
 			}
 			
 		}	
 		if(health>0 && !super.walking) {
 			super.walking = false;
 			super.idle = true;
-			return 0;
+			return ;
 			}
-		return 0;
+		return ;
 	}
 	
 	public void interact(KeyHandler keyH,Food[][] foodMap) {
@@ -187,10 +195,15 @@ public class Player extends Entity{
 						if(this.foodInv[i] == null) {
 							this.foodInv[i] = foodMap[gridX][gridY];
 							foodMap[gridX][gridY]=null;
-							return;
 						}
 					}
 				}
+				
+			if(Weapon.weaponArray[gridX][gridY] == null) return;
+			if(Player.currentWeapon.damage < Weapon.weaponArray[gridX][gridY].damage) {
+			Player.currentWeapon = Weapon.weaponArray[gridX][gridY];
+			Weapon.weaponArray[gridX][gridY] = null;
+			}
 		}
 	}
 	

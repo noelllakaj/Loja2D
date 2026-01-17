@@ -34,16 +34,17 @@ public class Camera2D {
 		//graphics = renderedFrame.getGraphics();
 	}
 	
-	public void render(Player player, KeyHandler keyH, Food[][] food, int[][][] map, Enemy[] enemies) {
+	public void render(Player player, KeyHandler keyH, Food[][] food, int[][][] map, Enemy[] enemies,Graphics frameG) {
 		Graphics g = renderedFrame.getGraphics();
 		followPlayer(player);
 	    renderMap(tileSprites,map,g);
 	    renderEnemies(enemies,g); 
 	    renderPlayer(player,g);
 	    renderFood(food,g);
-	    renderWeapon(player,g);
+	    if(player.death==false) renderWeapon(player,g);
 	    renderGroundWeapons(g);
-	    renderHUD(player,g);
+	    if(player.death==false) renderHUD(player,g);
+	    frameG.drawImage(renderedFrame,0,0, null);
 	    g.dispose();
 	}
 
@@ -209,11 +210,11 @@ public class Camera2D {
 		
 		Vector2 weapon = new Vector2();
 		
-		player.currentWeapon.updateTargetPos(player);
-		player.currentWeapon.updatePos();
+		Player.currentWeapon.updateTargetPos(player);
+		Player.currentWeapon.updatePos();
 		
-		weapon.setEqual(getScreenPosition(player.currentWeapon.position));
-		g.drawImage(player.currentWeapon.sprite,(int)weapon.x-16,(int)weapon.y-16,null);
+		weapon.setEqual(getScreenPosition(Player.currentWeapon.position));
+		g.drawImage(Player.currentWeapon.sprite,(int)weapon.x-16,(int)weapon.y-16,null);
 		
 
 	}
@@ -265,13 +266,39 @@ public class Camera2D {
 		g.fillOval(708, 454, 40, 40);
 		g.setColor(Color.getHSBColor(230f, 54.5f, 82.75f));
 		g.fillOval(708, 452, 40, 40);
-		g.drawImage(player.currentWeapon.sprite,712,456, null);
+		g.drawImage(Player.currentWeapon.sprite,712,456, null);
 		
 		this.hud.draw((java.awt.Graphics2D)g, player);
 		
 	}
 	
 	public void renderGroundWeapons(Graphics g) {
+		Vector2 topLeft = this.position.sub(this.edgeToCenter);
+		Vector2 bottomRight = this.position.add(edgeToCenter);
 		
+		 int mapWidth = Weapon.weaponArray.length;
+		    int mapHeight = Weapon.weaponArray[0].length;
+
+		    int startX = (int) Math.floor(topLeft.x / tileSize);
+		    int startY = (int) Math.floor(topLeft.y / tileSize);
+		    int endX   = (int) Math.ceil(bottomRight.x / tileSize);
+		    int endY   = (int) Math.ceil(bottomRight.y / tileSize);
+
+		    // CLAMP TO MAP BOUNDS
+		    startX = Math.max(0, startX);
+		    startY = Math.max(0, startY);
+		    endX   = Math.min(mapWidth, endX);
+		    endY   = Math.min(mapHeight, endY);
+		
+		Vector2 firstPoint = new Vector2();
+		Vector2 sfp = new Vector2();
+		for(int i = startX ; i < endX ; i++) {
+			for(int j = startY ; j < endY ; j++) {
+				firstPoint.setEqual(new Vector2(i*this.tileSize,j*this.tileSize));
+				sfp.setEqual(getScreenPosition(firstPoint));
+				if(Weapon.weaponArray[i][j]!=null)
+				g.drawImage(Weapon.weaponArray[i][j].sprite,(int)sfp.x,(int)sfp.y,null);
+			}
+		}
 	}
 }
