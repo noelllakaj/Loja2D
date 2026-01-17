@@ -36,7 +36,6 @@ public class Food {
 			this.sprite32 = ImageIO.read(getClass().getResourceAsStream(path32[id]));
 			this.regen = regenArr[id];
 		} catch (IOException e) {
-			System.out.print("negroo");
 			e.printStackTrace();
 		}
 	}

@@ -18,8 +18,8 @@ public class Weapon {
     };
 
     static int[] damages = {
-        3, // Sword
-        2  // Axe
+        2, // Sword
+        3  // Axe
     };
 
     static String[] paths = {

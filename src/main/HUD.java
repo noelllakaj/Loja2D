@@ -31,10 +31,12 @@ public class HUD {
         int heartBackgroundWidth = player.maxHealth * heartSize + (player.maxHealth - 1) * heartSpacing + 10;
         int heartBackgroundHeight = heartSize + 10;
 
-        g2.setColor(Color.DARK_GRAY);
+        g2.setColor(Color.YELLOW);
         g2.fillRect(x - 5, y - 5, heartBackgroundWidth, heartBackgroundHeight);
+        g2.fillOval(x-21,y-5,34,34);
+        g2.fillOval(x-21+heartBackgroundWidth,y-5,34,34);
         g2.setColor(Color.WHITE);
-        g2.drawRect(x - 5, y - 5, heartBackgroundWidth, heartBackgroundHeight);
+     //   g2.drawRect(x - 5, y - 5, heartBackgroundWidth, heartBackgroundHeight);
 
         for (int i = 0; i < player.maxHealth; i++) {
             if (player.health >= i + 1) {

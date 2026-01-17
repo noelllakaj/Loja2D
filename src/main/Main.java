@@ -34,7 +34,7 @@ public class Main {
 		Player player = new Player(new Vector2(144,144),tileSize,mapX,mapY,map);//create player at 16,16
 		Random rand = new Random();
 		
-		Enemy[] enemies = new Enemy[150];
+		Enemy[] enemies = new Enemy[4];
 		
 		for (int i = 0; i < enemies.length; i++) {
 		    enemies[i] = new Enemy(
@@ -44,6 +44,8 @@ public class Main {
 		        mapY,
 		        player.obstacles
 		    );
+		    enemies[i].damage = i ;
+		    System.out.println(enemies[i].damage);
 		}
 
 		

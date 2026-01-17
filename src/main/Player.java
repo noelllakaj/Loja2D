@@ -59,6 +59,8 @@ public class Player extends Entity{
 			foodInv[selectedSlot] = null;
 			selectedSlot = -1;
 		}
+		
+		
 		 
 	}
 
