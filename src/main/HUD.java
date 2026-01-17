@@ -26,7 +26,7 @@ public class HUD {
     public void draw(Graphics2D g2, Player player) {
 
         int x = 40; 
-        int y = 40; 
+        int y = 447; 
 
         int heartBackgroundWidth = player.maxHealth * heartSize + (player.maxHealth - 1) * heartSpacing + 10;
         int heartBackgroundHeight = heartSize + 10;

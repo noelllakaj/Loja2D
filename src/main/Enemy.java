@@ -1,8 +1,6 @@
 package main;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 public class Enemy extends Entity {
 
@@ -15,8 +13,10 @@ public class Enemy extends Entity {
     boolean[][] obstacles;
 
     int damage = 1;
-    int attackCooldown = 30;
+    int attackCooldown = 300;
     int attackTimer = 0;
+    
+    boolean dead = false;
 
     public Enemy(Vector2 startPos, int tileSize, int mapX, int mapY, boolean[][] obstacles) {
         this.tileSize = tileSize;
@@ -30,45 +30,57 @@ public class Enemy extends Entity {
             new Vector2((int)startPos.x / tileSize, (int)startPos.y / tileSize)
         );
 
-        walking = true;
+        idle = true;
         loadAnimations();
     }
 
     public void update(Player player) {
         if (death) return;
 
-        moveTowardsPlayer(player);
+      //  moveTowardsPlayer(player);
         lerp();
         attack(player);
     }
 
-    private void moveTowardsPlayer(Player player) {
+    public void moveTowardsPlayer(Player player) {
 
-        boolean readyToMove =
-            !(this.targetPosition.sub(this.position).magnitude2() > 2);
-
-        if (!readyToMove) return;
+        if (!isAtTarget()) return;
 
         int dx = (int)(player.gridPosition.x - gridPosition.x);
         int dy = (int)(player.gridPosition.y - gridPosition.y);
 
-        // Prioritize axis with bigger distance
         if (Math.abs(dx) > Math.abs(dy)) {
-            tryMove(dx > 0 ? 1 : -1, 0);
+            if (tryMove(sign(dx), 0) == 0)
+                tryMove(0, sign(dy));
         } else {
-            tryMove(0, dy > 0 ? 1 : -1);
+            if (tryMove(0, sign(dy)) == 0)
+                tryMove(sign(dx), 0);
         }
     }
 
-    private void tryMove(int xDir, int yDir) {
+    private int sign(int v) {
+        return Integer.compare(v, 0);
+    }
+
+    private boolean isAtTarget() {
+        return targetPosition.sub(position).magnitude2() <= 2;
+    }
+
+
+    private int tryMove(int xDir, int yDir) {
 
         int nx = (int)gridPosition.x + xDir;
         int ny = (int)gridPosition.y + yDir;
 
         if (nx < 0 || ny < 0 || nx >= mapX || ny >= mapY)
-            return;
+            return 0;
 
-        if (obstacles[nx][ny]) return;
+        if (obstacles[nx][ny]) {
+        	super.idle = true;
+        	super.walking = false;
+        	return 0;
+        } 
+        super.walking = true;
 
         gridPosition.x = nx;
         gridPosition.y = ny;
@@ -77,13 +89,14 @@ public class Enemy extends Entity {
         targetPosition.y = gridPosition.y * tileSize + 15;
 
         updateDirection(xDir, yDir);
+        return 1;
     }
 
     private void updateDirection(int xDir, int yDir) {
-        if (xDir == -1) direction = 1;
-        if (xDir == 1)  direction = 3;
-        if (yDir == -1) direction = 0;
-        if (yDir == 1)  direction = 2;
+        if (xDir == -1) direction = directions.left;
+        if (xDir == 1)  direction = directions.right;
+        if (yDir == -1) direction = directions.up;
+        if (yDir == 1)  direction = directions.down;
     }
 
     public void lerp() {
@@ -102,37 +115,44 @@ public class Enemy extends Entity {
         position.setEqual(position.add(dir.multiplyC(speed)));
     }
 
-    private void attack(Player player) {
-        attackTimer++;
+    public void attack(Player player) {
 
-        if (attackTimer < attackCooldown) return;
+    	boolean attackTry =
+    		    (int)gridPosition.x == (int)player.gridPosition.x &&
+    		    (int)gridPosition.y == (int)player.gridPosition.y;
 
-        if (gridPosition.equals(player.gridPosition)) {
-            player.health -= damage;
-            attackTimer = 0;
+    	
+        if (!attackTry)
+            return;
+
+        if (attackTimer > 0) {
+            attackTimer--;
+            return;
         }
-    }
-
-    private void loadAnimations() {
-        idleAnimation = new BufferedImage[4][2];
-        walkingAnimation = new BufferedImage[4][4];
-
-        try {
-            idleAnimation[2][0] = load("images");
-            idleAnimation[2][1] = load("images");
-            // add other directions same way
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(damage <= player.currentWeapon.damage) {
+       	super.death = true;
+        	return;
         }
+
+        player.takeDamage(damage);
+        attackTimer = attackCooldown;
     }
 
-    private BufferedImage load(String path) throws IOException {
-        var stream = getClass().getResourceAsStream(path);
-        if (stream == null)
-            throw new RuntimeException("Missing resource: " + path);
-        return ImageIO.read(stream);
-    }
-    
 
 
+    public void loadAnimations() {
+		super.idleAnimation = new BufferedImage[4][5];
+		super.walkingAnimation = new BufferedImage[4][10];
+		super.deathAnimation = new BufferedImage[4][7];
+		// IDLE ANIMATIONS
+		super.idleAnimation = SpriteLoader.load("/Zombie/zombieIdle","Idle",5);
+
+		// WALKING ANIMATIONS
+		super.walkingAnimation = SpriteLoader.load("/Zombie/zombieWalking","Walk",10);
+		
+		//DEATH ANIMATIONS
+		super.deathAnimation = SpriteLoader.load("/Zombie/zombieDeath", "Death", 7);
+		
+	}
+	
 }

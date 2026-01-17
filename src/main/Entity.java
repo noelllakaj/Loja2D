@@ -3,10 +3,19 @@ package main;
 import java.awt.image.BufferedImage;
 
 public class Entity {
-	boolean idle,walking,death;
+	boolean idle,walking,death,deathAnimationFinished = false;
 	
-	int direction=2,currentFrame=0; //0-up 1-left 2-down 3-right
-	int idleFPF = 30,walkingFPF = 30,deathFPF = 10;
+	
+	public enum directions{ //0-up 1-left 2-down 3-right
+		up, 
+		left,
+		down,
+		right;
+	}
+	
+	directions direction = directions.down;
+	int currentFrame=0; 
+	int idleFPF = 30,walkingFPF = 30,deathFPF = 40;
 	int idleCFPF=0,walkingCFPF=0,deathCFPF=0;
 	
 	BufferedImage idleAnimation[][];
@@ -22,9 +31,12 @@ public class Entity {
 				currentFrame++;
 				deathCFPF=0;
 			}
-			if(currentFrame>=idleAnimation[0].length)
+			if(currentFrame>=idleAnimation[0].length) {
 				currentFrame=0;
-			return deathAnimation[direction][currentFrame];
+				deathAnimationFinished= true;
+			}
+				
+			return deathAnimation[direction.ordinal()][currentFrame];
 			
 		} else if(walking) {
 			walkingCFPF++;
@@ -34,7 +46,7 @@ public class Entity {
 			}
 			if(currentFrame>=walkingAnimation[0].length)
 				currentFrame=0;
-			return walkingAnimation[direction][currentFrame];
+			return walkingAnimation[direction.ordinal()][currentFrame];
 		}else {
 			idleCFPF++;
 			if(idleCFPF>=idleFPF) {
@@ -43,7 +55,7 @@ public class Entity {
 			}
 			if(currentFrame>=idleAnimation[0].length)
 				currentFrame=0;
-			return idleAnimation[direction][currentFrame];
+			return idleAnimation[direction.ordinal()][currentFrame];
 		}
 	}
 }

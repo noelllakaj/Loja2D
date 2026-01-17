@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,11 +34,11 @@ public class Main {
 		Player player = new Player(new Vector2(144,144),tileSize,mapX,mapY,map);//create player at 16,16
 		Random rand = new Random();
 		
-		Enemy[] enemies = new Enemy[3];
+		Enemy[] enemies = new Enemy[150];
 		
 		for (int i = 0; i < enemies.length; i++) {
 		    enemies[i] = new Enemy(
-		        new Vector2(64 + i * 64, 64),
+		        new Vector2(128 + i * 64, 128),
 		        tileSize,
 		        mapX,
 		        mapY,
@@ -58,21 +57,47 @@ public class Main {
 				food[i][j] = new Food(id);
 			}
 		}
+		int hasMoved=0;
 		
-		HUD hud = new HUD();
+		
+		long lastTime = System.nanoTime();
+		long timer = System.currentTimeMillis();
+
+		int frames = 0;
+		int fps = 0;
+
 
 		while (true) {
-			player.move(keyH);
-		    player.interact(keyH,food);
-		    player.lerp();
+			
+			long now = System.nanoTime();
+		    lastTime = now;
+		    
+			hasMoved = player.Update(keyH, food);
 		    //enemy updates
+			if(hasMoved == 1) {
 		    for (Enemy e : enemies) {
+		        e.moveTowardsPlayer(player);
+		    }
+			}
+			for (Enemy e : enemies) {
 		        e.update(player);
 		    }
+			
 		    camera.render(player, keyH, food, map, enemies);
 
-			hud.draw((Graphics2D)camera.renderedFrame.getGraphics(), player);
+			//hud.draw((Graphics2D)camera.renderedFrame.getGraphics(), player);
 		    g.drawImage(camera.renderedFrame,0,0,null);
+		    
+		    frames++;
+
+		    // FPS calculation every 1 second
+		    if (System.currentTimeMillis() - timer >= 1000) {
+		        fps = frames;
+		        frames = 0;
+		        timer += 1000;
+
+		        System.out.println("FPS: " + fps);
+		    }
 
 		}
 		

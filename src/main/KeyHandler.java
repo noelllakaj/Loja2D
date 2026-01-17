@@ -4,7 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
-	public boolean pressedW,pressedD,pressedS,pressedA,pressedE;
+	public boolean pressedW,pressedD,pressedS,pressedA,pressedE,pressed1,pressed2,pressed3,pressed4,pressed5;
 
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -30,6 +30,21 @@ public class KeyHandler implements KeyListener {
 	        if (key == java.awt.event.KeyEvent.VK_E) {
 	        	pressedE = true; 
 	        }
+	        if (key == java.awt.event.KeyEvent.VK_1) {
+	        	pressed1 = true; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_2) {
+	        	pressed2 = true; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_3) {
+	        	pressed3 = true; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_4) {
+	        	pressed4 = true; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_5) {
+	        	pressed5 = true; 
+	        }
 		
 	}
 
@@ -50,6 +65,21 @@ public class KeyHandler implements KeyListener {
 	        }
 	        if (key == java.awt.event.KeyEvent.VK_E) {
 	        	pressedE = false; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_1) {
+	        	pressed1 = false; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_2) {
+	        	pressed2 = false; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_3) {
+	        	pressed3 = false; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_4) {
+	        	pressed4 = false; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_5) {
+	        	pressed5 = false; 
 	        }
 		
 	}

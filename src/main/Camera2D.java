@@ -19,7 +19,7 @@ public class Camera2D {
 	Matrix2 startEnd;
 	BufferedImage renderedFrame;
 	static BufferedImage[] tileSprites = new BufferedImage[128];
-	//Graphics graphics;
+	HUD hud = new HUD();
 		
 	public Camera2D() {}
 	
@@ -35,22 +35,23 @@ public class Camera2D {
 	}
 	
 	public void render(Player player, KeyHandler keyH, Food[][] food, int[][][] map, Enemy[] enemies) {
-	    renderEnemies(enemies); 
+		Graphics g = renderedFrame.getGraphics();
 		followPlayer(player);
-	    renderMap(tileSprites,map);
-	    renderFood(food);
-	    renderWeapon(player);
-	    renderGroundWeapons();
-	    renderHUD(player);
+	    renderMap(tileSprites,map,g);
+	    renderEnemies(enemies,g); 
+	    renderPlayer(player,g);
+	    renderFood(food,g);
+	    renderWeapon(player,g);
+	    renderGroundWeapons(g);
+	    renderHUD(player,g);
+	    g.dispose();
 	}
 
 	
-	public void renderEnemies(Enemy[] enemies) {
-
-	    Graphics g = renderedFrame.getGraphics();
+	public void renderEnemies(Enemy[] enemies,Graphics g) {
 
 	    for (Enemy e : enemies) {
-	        if (e.death) continue; // skip dead enemies
+	        if (e.deathAnimationFinished) continue; // skip dead enemies
 
 	        Vector2 screenPos = getScreenPosition(e.position);
 	        g.drawImage(
@@ -60,8 +61,6 @@ public class Camera2D {
 	            null
 	        );
 	    }
-
-	    g.dispose();
 	}
 
 	public void followPlayer(Player player) {
@@ -92,23 +91,20 @@ public class Camera2D {
 		return screenPos;
 	}
 	
-	public void renderPlayer( Player player) {
+	public void renderPlayer( Player player, Graphics imageGraphics) {
 		
 		Vector2 playerScreenPosition = new Vector2();
 		playerScreenPosition.setEqual(getScreenPosition(player.position)); //screen position of player
-		
-		Graphics imageGraphics = this.renderedFrame.getGraphics();
+	
 		//imageGraphics.setColor(Color.RED);
 		//imageGraphics.fillOval((int)playerScreenPosition.x-16,(int)playerScreenPosition.y-16,32,32);
 		imageGraphics.drawImage(player.getCurrentFrame(), (int)playerScreenPosition.x-16, (int)playerScreenPosition.y-16, null);
 
-		imageGraphics.dispose();
 		//System.out.println(player.idle+" "+ player.walking + " "+player.death+" " + player.idleCFPF +" "+ player.walkingCFPF);
 	}
 	
-	public void renderMap( BufferedImage[] tiles, int[][][] map) {
+	public void renderMap( BufferedImage[] tiles, int[][][] map,Graphics g) {
 
-	    Graphics g = this.renderedFrame.getGraphics();
 
 	    Vector2 topLeft = position.sub(edgeToCenter);
 	    Vector2 bottomRight = position.add(edgeToCenter);
@@ -146,11 +142,10 @@ public class Camera2D {
 	        }
 	    }
 
-	    g.dispose();
 	}
 
 	
-	public void renderFood(Food[][] food) {
+	public void renderFood(Food[][] food,Graphics g) {
 		
 		Vector2 topLeft = this.position.sub(this.edgeToCenter);
 		Vector2 bottomRight = this.position.add(edgeToCenter);
@@ -169,7 +164,6 @@ public class Camera2D {
 		    endX   = Math.min(mapWidth, endX);
 		    endY   = Math.min(mapHeight, endY);
 		
-		Graphics g = this.renderedFrame.getGraphics();
 		Vector2 firstPoint = new Vector2();
 		Vector2 sfp = new Vector2();
 		for(int i = startX ; i < endX ; i++) {
@@ -180,7 +174,7 @@ public class Camera2D {
 				g.drawImage(food[i][j].sprite,(int)sfp.x+8,(int)sfp.y+8,null);
 			}
 		}
-		g.dispose();
+
 	}
 	
 	private static void loadTiles(BufferedImage[] images) {
@@ -210,24 +204,25 @@ public class Camera2D {
 	        e.printStackTrace();
 	    }
 	}
-	public void renderWeapon(Player player) {
-		Graphics g = renderedFrame.getGraphics();
+	public void renderWeapon(Player player,Graphics g) {
+
+		
 		Vector2 weapon = new Vector2();
+		
 		player.currentWeapon.updateTargetPos(player);
 		player.currentWeapon.updatePos();
+		
 		weapon.setEqual(getScreenPosition(player.currentWeapon.position));
 		g.drawImage(player.currentWeapon.sprite,(int)weapon.x-16,(int)weapon.y-16,null);
-		g.dispose();
 		
+
 	}
 	
 	double angle = 0;
 	
-	public void renderHUD(Player player) {
-		Graphics g = renderedFrame.getGraphics();
-		angle+=0.05;
-		
-		
+	public void renderHUD(Player player,Graphics g) {
+
+		angle+=0.05;	
 		
 		g.setColor(Color.DARK_GRAY);
 		g.fillOval(240, 42, 40, 40);
@@ -239,11 +234,20 @@ public class Camera2D {
 		g.fillOval(490, 40, 40, 40);
 		g.fillRect(259, 40, 250, 40);
 		
+		
+		
+		
 		for(int i = 0 ; i < 5 ;i++) {
 			
 			if(player.foodInv[i]!=null) {
 				g.setColor(Color.GRAY.darker());
 				g.fillOval(251+i*60,55,32,24);
+				
+				if(player.selectedSlot == i) {
+					g.setColor(Color.GREEN);
+					g.fillOval(251+player.selectedSlot*60,55,32,24);
+				}
+				
 				if(3*Math.sin(angle/5-Math.PI*i/5)-2>0) {
 					
 					g.drawImage(player.foodInv[i].sprite32,251+i*60,(int)(45-(3*Math.sin(angle/5-Math.PI*i/5)-2)*15),null);
@@ -255,20 +259,19 @@ public class Camera2D {
 		
 		
 		
+		
+		
 		g.setColor(Color.DARK_GRAY);
 		g.fillOval(708, 454, 40, 40);
 		g.setColor(Color.getHSBColor(230f, 54.5f, 82.75f));
 		g.fillOval(708, 452, 40, 40);
 		g.drawImage(player.currentWeapon.sprite,712,456, null);
 		
-	}
-	
-	public void renderGroundWeapons() {
+		this.hud.draw((java.awt.Graphics2D)g, player);
 		
 	}
 	
-	public void renderEnemies() {
+	public void renderGroundWeapons(Graphics g) {
 		
 	}
-
 }

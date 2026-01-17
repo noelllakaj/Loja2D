@@ -10,6 +10,7 @@ public class Food {
 	static String path[] = {"/Food/greenApple.png","/Food/redApple.png","/Food/yellowApple.png",
 					 "/Food/blueberries.png","/Food/lemon.png","/Food/cherries.png","/Food/grape.png",
 					 "/Food/pineapple.png"};
+	int regenArr[] = {1,1,1,1,1,1,1,1};
 	
 	static String path32[] = {
 		    "/Food/Food32/greenApple.png",
@@ -26,12 +27,14 @@ public class Food {
 
 	BufferedImage sprite;
 	BufferedImage sprite32;
+	int regen;
 	
 	public Food(int id) {
 		this.id=id;
 		try {
 			this.sprite = ImageIO.read(getClass().getResourceAsStream(path[id]));
 			this.sprite32 = ImageIO.read(getClass().getResourceAsStream(path32[id]));
+			this.regen = regenArr[id];
 		} catch (IOException e) {
 			System.out.print("negroo");
 			e.printStackTrace();

@@ -1,8 +1,6 @@
 package main;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 public class Player extends Entity{
 	int health=5;
@@ -12,9 +10,10 @@ public class Player extends Entity{
 	int tileSize;
 	int mapX,mapY; // map size
 	boolean[][] obstacles;
-	Food[] foodInv = new Food[5];
+	Food[] foodInv = new Food[5];  int selectedSlot = -1;
 	Weapon currentWeapon = new Weapon(0);
 	public int maxHealth = 5;
+	int hasMoved=0;
 	
 	public Player(Vector2 position,int tileSize,int mapX,int mapY,int[][][] map) {
 		this.health = 5;
@@ -27,63 +26,69 @@ public class Player extends Entity{
 		this.obstacles = new boolean[mapX][mapY];
 		this.loadAnimations();
 		this.getObstacles(map);
+		
 	}
 	
+	public int Update(KeyHandler keyH,Food[][] food) {
+		
+		hasMoved = move(keyH);
+		
+	    interact(keyH,food);
+	    eatingFruits(keyH);
+	    lerp();
+	    return hasMoved;
+	}
+	
+	private void eatingFruits(KeyHandler keyH) {
+	/*	if (keyH.pressed1 && selectedSlot == 0) { selectedSlot = -1; return;}
+		if (keyH.pressed2 && selectedSlot == 1) { selectedSlot = -1; return;}
+		if (keyH.pressed3 && selectedSlot == 2) { selectedSlot = -1; return;}
+		if (keyH.pressed4 && selectedSlot == 3) { selectedSlot = -1; return;}
+		if (keyH.pressed5 && selectedSlot == 4) { selectedSlot = -1; return;}*/ //deselecting
+		
+		if (keyH.pressed1 && foodInv[0] != null) selectedSlot = 0;
+		if (keyH.pressed2 && foodInv[1] != null) selectedSlot = 1;
+		if (keyH.pressed3 && foodInv[2] != null) selectedSlot = 2;
+		if (keyH.pressed4 && foodInv[3] != null) selectedSlot = 3;
+		if (keyH.pressed5 && foodInv[4] != null) selectedSlot = 4;
+		
+		
+			
+		if(keyH.pressedE && selectedSlot != -1 && maxHealth - health >= foodInv[selectedSlot].regen) {
+			health+= foodInv[selectedSlot].regen;
+			foodInv[selectedSlot] = null;
+			selectedSlot = -1;
+		}
+		 
+	}
+
 	public void loadAnimations() {
 		super.idleAnimation = new BufferedImage[4][2];
 		super.walkingAnimation = new BufferedImage[4][4];
 		super.deathAnimation = new BufferedImage[4][4];
-		try {
-			// IDLE ANIMATIONS
-			super.idleAnimation[0][0] = load("/Player/Idle/upIdle1.png");
-			super.idleAnimation[0][1] = load("/Player/Idle/upIdle2.png");
-
-			super.idleAnimation[1][0] = load("/Player/Idle/leftIdle1.png");
-			super.idleAnimation[1][1] = load("/Player/Idle/leftIdle2.png");
-
-			super.idleAnimation[2][0] = load("/Player/Idle/downIdle1.png");
-			super.idleAnimation[2][1] = load("/Player/Idle/downIdle2.png");
-
-			super.idleAnimation[3][0] = load("/Player/Idle/rightIdle1.png");
-			super.idleAnimation[3][1] = load("/Player/Idle/rightIdle2.png");
+		
+		// IDLE ANIMATIONS
+		super.idleAnimation = SpriteLoader.load("/Player/Idle","Idle",2);
 
 
-			// WALKING ANIMATIONS
-			super.walkingAnimation[0][0] = load("/Player/Walking/upWalk (1).png");
-			super.walkingAnimation[0][1] = load("/Player/Walking/upWalk (2).png");
-			super.walkingAnimation[0][2] = load("/Player/Walking/upWalk (3).png");
-			super.walkingAnimation[0][3] = load("/Player/Walking/upWalk (4).png");
-
-			super.walkingAnimation[1][0] = load("/Player/Walking/leftWalk (1).png");
-			super.walkingAnimation[1][1] = load("/Player/Walking/leftWalk (2).png");
-			super.walkingAnimation[1][2] = load("/Player/Walking/leftWalk (3).png");
-			super.walkingAnimation[1][3] = load("/Player/Walking/leftWalk (4).png");
-
-			super.walkingAnimation[2][0] = load("/Player/Walking/downWalk (1).png");
-			super.walkingAnimation[2][1] = load("/Player/Walking/downWalk (2).png");
-			super.walkingAnimation[2][2] = load("/Player/Walking/downWalk (3).png");
-			super.walkingAnimation[2][3] = load("/Player/Walking/downWalk (4).png");
-
-			super.walkingAnimation[3][0] = load("/Player/Walking/rightWalk (1).png");
-			super.walkingAnimation[3][1] = load("/Player/Walking/rightWalk (2).png");
-			super.walkingAnimation[3][2] = load("/Player/Walking/rightWalk (3).png");
-			super.walkingAnimation[3][3] = load("/Player/Walking/rightWalk (4).png");
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// WALKING ANIMATIONS
+		super.walkingAnimation = SpriteLoader.load("/Player/Walking", "Walk", 4);
+		
+		//DEATH ANIMATIONS
+		super.deathAnimation = SpriteLoader.load("/Player/Death", "Death", 4);
 		
 	}
 	
-	private BufferedImage load(String path) throws IOException {
-	    var stream = getClass().getResourceAsStream(path);
-	    if (stream == null) {
-	        throw new RuntimeException("Missing resource: " + path);
-	    }
-	    return ImageIO.read(stream);
+	public void takeDamage(int damageTaken) {
+		if(damageTaken >= health) {
+			health = 0;
+			death = true;
+		} 
+		
+		health -= damageTaken;
 	}
-
 	
+
 	public void lerp() {
 
 	    Vector2 direction = targetPosition.sub(position);
@@ -102,15 +107,14 @@ public class Player extends Entity{
 	    direction.normalize();
 	    position.setEqual(position.add(direction.multiplyC(speed)));
 	}
-
 	
-	public void move(KeyHandler keyHandler) {
+	public int move(KeyHandler keyHandler) { //returns 1 if player moves and 0 otherwise
 		
 		if(health<=0) {
 			super.idle=false;
 			super.walking = false;
 			super.death = true;
-			return;
+			return 0;
 		}
 		
 		boolean temp;
@@ -129,8 +133,8 @@ public class Player extends Entity{
 				this.gridPosition.x-=1;
 				this.targetPosition.x = this.gridPosition.x*tileSize+15;
 				super.idle=false;
-				super.direction = 1;
-				return;
+				super.direction = directions.left;
+				return 1;
 			}
 		}
 		
@@ -139,8 +143,8 @@ public class Player extends Entity{
 			this.gridPosition.y-=1;
 			this.targetPosition.y = this.gridPosition.y*tileSize+15;//+ tile offset
 			super.idle=false;
-			super.direction = 0;
-			return;
+			super.direction = directions.up;
+			return 1;
 			}
 		}
 		
@@ -149,8 +153,8 @@ public class Player extends Entity{
 				this.gridPosition.x+=1;
 				this.targetPosition.x = this.gridPosition.x*tileSize+15;
 				super.idle=false;
-				super.direction = 3;
-				return;
+				super.direction = directions.right;
+				return 1;
 			}
 		}
 		
@@ -159,16 +163,17 @@ public class Player extends Entity{
 				this.gridPosition.y+=1;
 				this.targetPosition.y = this.gridPosition.y*tileSize+15;
 				super.idle=false;
-				super.direction = 2;
-				return;
+				super.direction = directions.down;
+				return 1;
 			}
 			
 		}	
 		if(health>0 && !super.walking) {
 			super.walking = false;
 			super.idle = true;
-			return;
+			return 0;
 			}
+		return 0;
 	}
 	
 	public void interact(KeyHandler keyH,Food[][] foodMap) {
