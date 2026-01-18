@@ -32,6 +32,10 @@ public class Player extends Entity{
 		
 		
 	}
+	public boolean isAlive() {
+	    return health > 0;
+	}
+
 	
 	public void Update(KeyHandler keyH,Food[][] food) {
 		if(Player.deathAnimationFinished) System.exit(0);
