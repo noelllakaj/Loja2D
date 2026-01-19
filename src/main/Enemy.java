@@ -56,11 +56,10 @@ public class Enemy extends Entity {
         		
         		if(obstacles[spawnGridX][spawnGridY] == false 
         		  && enemyArray[spawnGridX][spawnGridY] == null) {
-        			Vector2 startPos = new Vector2(spawnGridX,spawnGridY).multiplyC(tileSize);
-        			
+        			Vector2 startPos = new Vector2(spawnGridX,spawnGridY).multiplyC(tileSize).add(new Vector2(15,15));        			
         			enemyList[i] = new Enemy(startPos);
         			enemyArray[spawnGridX][spawnGridY] = enemyList[i];	
-        			enemyList[i].damage = random.nextInt(6);
+        			enemyList[i].damage = random.nextInt(4)+1;
         			break;
         		}
     		}
@@ -72,6 +71,7 @@ public class Enemy extends Entity {
     		moveTowardsPlayer(player);
         for(Enemy e : enemyList) {
         	if(e.death==false) {
+        		
         		e.lerp();
         		e.attack(player);
         	}
@@ -83,8 +83,8 @@ public class Enemy extends Entity {
     	for(Enemy enemy : enemyList) {
         if (!enemy.isAtTarget()) return;
 
-        int dx = (int)(player.gridPosition.x - enemy.gridPosition.x);
-        int dy = (int)(player.gridPosition.y - enemy.gridPosition.y);
+        int dx = (int)(Player.gridPosition.x - enemy.gridPosition.x);
+        int dy = (int)(Player.gridPosition.y - enemy.gridPosition.y);
 
         if (Math.abs(dx) > Math.abs(dy)) {
             if (enemy.tryMove(enemy.sign(dx), 0) == 0)
@@ -113,7 +113,7 @@ public class Enemy extends Entity {
         if (nx < 0 || ny < 0 || nx >= mapX || ny >= mapY)
             return 0;
 
-        if (obstacles[nx][ny]) {
+        if (obstacles[nx][ny] && enemyArray[nx][ny]==null) {
         	super.idle = true;
         	super.walking = false;
         	return 0;
@@ -156,8 +156,8 @@ public class Enemy extends Entity {
     public void attack(Player player) {
 
     	boolean attackTry =
-    		    (int)gridPosition.x == (int)player.gridPosition.x &&
-    		    (int)gridPosition.y == (int)player.gridPosition.y;
+    		    (int)gridPosition.x == (int)Player.gridPosition.x &&
+    		    (int)gridPosition.y == (int)Player.gridPosition.y;
 
     	
         if (!attackTry)
@@ -194,5 +194,11 @@ public class Enemy extends Entity {
 		super.deathAnimation = SpriteLoader.load("/Zombie/zombieDeath", "Death", 7);
 		
 	}
+    
+    public String toString() {
+    	return "pos : " + this.gridPosition.x + " " + this.gridPosition.y + " " +this.damage;
+    			
+    }
+    
 	
 }

@@ -5,8 +5,16 @@ import java.awt.image.BufferedImage;
 public class Entity {
 	boolean idle,walking,death;
 	static boolean playerMoved = false;
-	static boolean deathAnimationFinished = false;
+	boolean deathAnimationFinished = false;
 	
+	public enum AnimationState {
+	    IDLE,
+	    WALKING,
+	    DEATH
+	};
+	
+	AnimationState currentState = AnimationState.IDLE;
+	AnimationState previousState = AnimationState.IDLE;
 	
 	public enum directions{ //0-up 1-left 2-down 3-right
 		up, 
@@ -17,7 +25,7 @@ public class Entity {
 	
 	directions direction = directions.down;
 	int currentFrame=0; 
-	int idleFPF = 30,walkingFPF = 30,deathFPF = 40;
+	int idleFPF = 30,walkingFPF = 30,deathFPF = 120;
 	int idleCFPF=0,walkingCFPF=0,deathCFPF=0;
 	
 	BufferedImage idleAnimation[][];
@@ -27,44 +35,70 @@ public class Entity {
 	
 	
 	public BufferedImage getCurrentFrame() {
-		if (death) {
 
-		    if (!deathAnimationFinished) {
-		        deathCFPF++;
+	    // determine current animation state
+	    if (death) {
+	        currentState = AnimationState.DEATH;
+	    } else if (walking) {
+	        currentState = AnimationState.WALKING;
+	    } else {
+	        currentState = AnimationState.IDLE;
+	    }
 
-		        if (deathCFPF >= deathFPF) {
-		            deathCFPF = 0;
-		            currentFrame++;
-		        }
+	    // reset frames if animation changed
+	    if (currentState != previousState) {
+	        resetAnimation();
+	        previousState = currentState;
+	    }
 
-		        if (currentFrame >= deathAnimation[0].length - 1) {
-		            currentFrame = deathAnimation[0].length - 1;
-		            deathAnimationFinished = true;
-		        }
-		    }
+	    switch (currentState) {
 
-		    return deathAnimation[direction.ordinal()][currentFrame];
-		
+	        case DEATH:
+	            if (!deathAnimationFinished) {
+	                deathCFPF++;
+	                if (deathCFPF >= deathFPF) {
+	                    deathCFPF = 0;
+	                    currentFrame++;
+	                }
 
-			
-		} else if(walking) {
-			walkingCFPF++;
-			if(walkingCFPF>=walkingFPF) {
-				walkingCFPF=0;
-				currentFrame++;
-			}
-			if(currentFrame>=walkingAnimation[0].length)
-				currentFrame=0;
-			return walkingAnimation[direction.ordinal()][currentFrame];
-		}else {
-			idleCFPF++;
-			if(idleCFPF>=idleFPF) {
-				idleCFPF=0;
-				currentFrame++;
-			}
-			if(currentFrame>=idleAnimation[0].length)
-				currentFrame=0;
-			return idleAnimation[direction.ordinal()][currentFrame];
-		}
+	                if (currentFrame >= deathAnimation[0].length - 1) {
+	                    currentFrame = deathAnimation[0].length - 1;
+	                    deathAnimationFinished = true;
+	                }
+	            }
+	            return deathAnimation[direction.ordinal()][currentFrame];
+
+	        case WALKING:
+	            walkingCFPF++;
+	            if (walkingCFPF >= walkingFPF) {
+	                walkingCFPF = 0;
+	                currentFrame++;
+	            }
+	            if (currentFrame >= walkingAnimation[0].length) {
+	                currentFrame = 0;
+	            }
+	            return walkingAnimation[direction.ordinal()][currentFrame];
+
+	        case IDLE:
+	        default:
+	            idleCFPF++;
+	            if (idleCFPF >= idleFPF) {
+	                idleCFPF = 0;
+	                currentFrame++;
+	            }
+	            if (currentFrame >= idleAnimation[0].length) {
+	                currentFrame = 0;
+	            }
+	            return idleAnimation[direction.ordinal()][currentFrame];
+	    }
 	}
+
+	
+	private void resetAnimation() {
+	    currentFrame = 0;
+	    idleCFPF = 0;
+	    walkingCFPF = 0;
+	    deathCFPF = 0;
+	}
+
 }

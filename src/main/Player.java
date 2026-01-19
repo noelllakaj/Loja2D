@@ -2,25 +2,24 @@ package main;
 
 import java.awt.image.BufferedImage;
 
-import javax.swing.JFrame;
 
 public class Player extends Entity{
 	static int health=5;
-	Vector2 position = new Vector2();
-	Vector2 gridPosition = new Vector2();
-	Vector2 targetPosition = new Vector2();
+	static Vector2 position = new Vector2();
+	static Vector2 gridPosition = new Vector2();
+	public static Vector2 targetPosition = new Vector2();
 	int tileSize;
 	int mapX,mapY; // map size
 	boolean[][] obstacles;
-	Food[] foodInv = new Food[5];  int selectedSlot = -1;
+	static Food[] foodInv = new Food[5];  int selectedSlot = -1;
 	static Weapon currentWeapon = new Weapon(0);
 	public int maxHealth = 5;
 	int hasMoved=0;
 	
-	public Player(Vector2 position,int tileSize,int[][][] map) {
-		this.position.setEqual(position);
-		this.targetPosition.setEqual(position);
-		this.gridPosition.setEqual(new Vector2((int)this.position.x/32,(int)this.position.y/32));
+	public Player(Vector2 GridPosition,int tileSize,int[][][] map) {
+		gridPosition.setEqual(GridPosition);
+		position.setEqual(gridPosition.multiplyC(32).add(new Vector2(15,15)));
+		targetPosition.setEqual(position);
 		this.tileSize = tileSize;
 		
 		this.mapX = map.length;
@@ -34,7 +33,7 @@ public class Player extends Entity{
 	}
 	
 	public void Update(KeyHandler keyH,Food[][] food) {
-		if(Player.deathAnimationFinished) System.exit(0);
+		if(this.deathAnimationFinished) System.exit(0);
 		if(super.death != true) {
 		move(keyH);
 	    interact(keyH,food);
@@ -124,7 +123,7 @@ public class Player extends Entity{
 		}
 		
 		boolean temp;
-		temp=!(this.targetPosition.sub(this.position).magnitude2()>2);
+		temp=!(targetPosition.sub(position).magnitude2()>2);
 		
 		
 		
@@ -134,10 +133,10 @@ public class Player extends Entity{
 						|| keyHandler.pressedS
 						|| !temp;
 		
-		if(keyHandler.pressedA && this.gridPosition.x>0 && temp) {
-			if(!obstacles[(int)this.gridPosition.x-1][(int)this.gridPosition.y]) {
-				this.gridPosition.x-=1;
-				this.targetPosition.x = this.gridPosition.x*tileSize+15;
+		if(keyHandler.pressedA && Player.gridPosition.x>0 && temp) {
+			if(!obstacles[(int)Player.gridPosition.x-1][(int)Player.gridPosition.y]) {
+				Player.gridPosition.x-=1;
+				targetPosition.x = Player.gridPosition.x*tileSize+15;
 				super.idle=false;
 				super.direction = directions.left;
 				playerMoved = true;
@@ -145,10 +144,10 @@ public class Player extends Entity{
 			}
 		}
 		
-		if(keyHandler.pressedW && this.gridPosition.y>0 && temp) {
-			if(!obstacles[(int)this.gridPosition.x][(int)this.gridPosition.y-1]) {
-			this.gridPosition.y-=1;
-			this.targetPosition.y = this.gridPosition.y*tileSize+15;//+ tile offset
+		if(keyHandler.pressedW && Player.gridPosition.y>0 && temp) {
+			if(!obstacles[(int)Player.gridPosition.x][(int)Player.gridPosition.y-1]) {
+				Player.gridPosition.y-=1;
+			targetPosition.y = Player.gridPosition.y*tileSize+15;//+ tile offset
 			super.idle=false;
 			super.direction = directions.up;
 			playerMoved = true;
@@ -156,10 +155,10 @@ public class Player extends Entity{
 			}
 		}
 		
-		if(keyHandler.pressedD && this.gridPosition.x<mapX-1 && temp) {//map size -1
-			if(!obstacles[(int)this.gridPosition.x+1][(int)this.gridPosition.y]) {
-				this.gridPosition.x+=1;
-				this.targetPosition.x = this.gridPosition.x*tileSize+15;
+		if(keyHandler.pressedD && Player.gridPosition.x<mapX-1 && temp) {//map size -1
+			if(!obstacles[(int)Player.gridPosition.x+1][(int)Player.gridPosition.y]) {
+				Player.gridPosition.x+=1;
+				targetPosition.x = Player.gridPosition.x*tileSize+15;
 				super.idle=false;
 				super.direction = directions.right;
 				playerMoved = true;
@@ -167,10 +166,10 @@ public class Player extends Entity{
 			}
 		}
 		
-		if(keyHandler.pressedS && this.gridPosition.y<mapY-1 && temp) {//map size -1
-			if(!obstacles[(int)this.gridPosition.x][(int)this.gridPosition.y+1]) {
-				this.gridPosition.y+=1;
-				this.targetPosition.y = this.gridPosition.y*tileSize+15;
+		if(keyHandler.pressedS && Player.gridPosition.y<mapY-1 && temp) {//map size -1
+			if(!obstacles[(int)Player.gridPosition.x][(int)Player.gridPosition.y+1]) {
+				Player.gridPosition.y+=1;
+				targetPosition.y = Player.gridPosition.y*tileSize+15;
 				super.idle=false;
 				super.direction = directions.down;
 				playerMoved = true;
@@ -189,11 +188,11 @@ public class Player extends Entity{
 	public void interact(KeyHandler keyH,Food[][] foodMap) {
 		//if E is pressed
 		if(keyH.pressedE) {
-			int gridX = (int)this.gridPosition.x,gridY=(int)this.gridPosition.y;
+			int gridX = (int)Player.gridPosition.x,gridY=(int)Player.gridPosition.y;
 				if(foodMap[gridX][gridY] != null) {
-					for(int i = 0 ; i < this.foodInv.length ; i++) {
-						if(this.foodInv[i] == null) {
-							this.foodInv[i] = foodMap[gridX][gridY];
+					for(int i = 0 ; i < Player.foodInv.length ; i++) {
+						if(Player.foodInv[i] == null) {
+							Player.foodInv[i] = foodMap[gridX][gridY];
 							foodMap[gridX][gridY]=null;
 						}
 					}

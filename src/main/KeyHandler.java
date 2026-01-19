@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
 	public boolean pressedW,pressedD,pressedS,pressedA,pressedE,pressed1,pressed2,pressed3,pressed4,pressed5;
-
+	public boolean pressedJ,pressedK;
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
@@ -45,6 +45,12 @@ public class KeyHandler implements KeyListener {
 	        if (key == java.awt.event.KeyEvent.VK_5) {
 	        	pressed5 = true; 
 	        }
+	        if (key == java.awt.event.KeyEvent.VK_J) {
+	        	pressedJ = true; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_K) {
+	        	pressedK = true; 
+	        }
 		
 	}
 
@@ -80,6 +86,12 @@ public class KeyHandler implements KeyListener {
 	        }
 	        if (key == java.awt.event.KeyEvent.VK_5) {
 	        	pressed5 = false; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_J) {
+	        	pressedJ = false; 
+	        }
+	        if (key == java.awt.event.KeyEvent.VK_K) {
+	        	pressedK = false; 
 	        }
 		
 	}

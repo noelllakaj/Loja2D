@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 
 public class HUD {
 
-    private BufferedImage heartFull, heartHalf, heartBlank;
+    static public BufferedImage heartFull, heartHalf, heartBlank;
 
     private int heartSize = 24;    
     private int heartSpacing = 5;  

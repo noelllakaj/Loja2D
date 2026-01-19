@@ -15,6 +15,7 @@ public class Weapon {
     private Vector2 targetPosition = new Vector2();
     private double angle = 0;
     public static Weapon[][] weaponArray;
+    public int id;
 
     static String[] names = {
         "Sword", "Axe","Hammer","Mace","Chainsaw","Fire Sword"
@@ -52,6 +53,7 @@ public class Weapon {
     public Weapon(int id) {
         this.name = names[id];
         this.damage = damages[id];
+        this.id = id;
 
         try {
             sprite = ImageIO.read(

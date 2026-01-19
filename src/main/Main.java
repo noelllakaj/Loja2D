@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 public class Main {
 	static int tileSize = 32;
 	static int mapX,mapY;
-
 	static int frameWidth = tileSize*24, frameHeight = tileSize*16; //start frame dimensions 32*24=768 32*16=512
 	static Vector2 screenDimensions = new Vector2(frameWidth,frameHeight);
 	
@@ -31,10 +30,10 @@ public class Main {
 		Graphics g = frame.getGraphics();
 		
 		Camera2D camera = new Camera2D(screenDimensions.multiplyC(0.5),screenDimensions,mapSizePixels); // create camera mid-screen frame dimensions
-		Player player = new Player(new Vector2(144,144),tileSize,map);//create player at 144,144
+		Player player = new Player(new Vector2(6,6),tileSize,map);//create player at 144,144
 		
 		Food.generateFood(map);
-		Enemy.spawnEnemies(10, player.obstacles);
+		Enemy.spawnEnemies(5, player.obstacles);
 		Weapon.generateWeapons(map, Food.foodArray);
 		
 		
@@ -56,6 +55,9 @@ public class Main {
 		 
 
 		    frames++;
+		    
+		    if(keyH.pressedJ) SaveManager.save();
+		    if(keyH.pressedK) SaveManager.load();
 
 		    if (System.currentTimeMillis() - timer >= 1000) {
 		        fps = frames;

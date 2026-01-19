@@ -1,5 +1,6 @@
 package main;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -49,7 +50,7 @@ public class Camera2D {
 	}
 
 	
-	public void renderEnemies(Enemy[] enemies,Graphics g) {
+	/*public void renderEnemies(Enemy[] enemies,Graphics g) {
 
 	    for (Enemy e : enemies) {
 	        if (e.deathAnimationFinished) continue; // skip dead enemies
@@ -60,13 +61,46 @@ public class Camera2D {
 	            (int)screenPos.x - 16, // center sprite
 	            (int)screenPos.y - 16,
 	            null
+	    }
+	}*/
+	
+	public void renderEnemies(Enemy[] enemies, Graphics g) {
+
+	    FontMetrics fm = g.getFontMetrics();
+
+	    for (Enemy e : enemies) {
+	        if (e.deathAnimationFinished) continue; // skip dead enemies
+
+	        Vector2 screenPos = getScreenPosition(e.position);
+
+	        int x = (int) screenPos.x - 16;
+	        int y = (int) screenPos.y - 16;
+
+	        // draw enemy sprite
+	        g.drawImage(
+	            e.getCurrentFrame(),
+	            x,
+	            y,
+	            null
 	        );
+
+	        // ---- draw damage above enemy ----
+	        String dmgText = String.valueOf(e.damage);
+
+	        int textWidth = fm.stringWidth(dmgText);
+	        int textX = (int) screenPos.x - textWidth / 2;
+	        int textY = y - 3; // 5 pixels above sprite
+
+	        g.setColor(Color.RED);
+	        g.drawString(dmgText, textX-6, textY);
+	        g.drawImage(HUD.heartFull,textX+2,textY-12,null);
 	    }
 	}
 
+
 	public void followPlayer(Player player) {
 	    // desired new position
-	    Vector2 target = this.position.add(player.position.sub(this.position).multiplyC(0.1));
+	    Vector2 target = this.position.add(Player.position.sub(this.position).multiplyC(0.1));
 
 	    // clamp X
 	    double halfW = this.dimensions.x / 2;
@@ -95,7 +129,7 @@ public class Camera2D {
 	public void renderPlayer( Player player, Graphics imageGraphics) {
 		
 		Vector2 playerScreenPosition = new Vector2();
-		playerScreenPosition.setEqual(getScreenPosition(player.position)); //screen position of player
+		playerScreenPosition.setEqual(getScreenPosition(Player.position)); //screen position of player
 	
 		//imageGraphics.setColor(Color.RED);
 		//imageGraphics.fillOval((int)playerScreenPosition.x-16,(int)playerScreenPosition.y-16,32,32);
@@ -240,7 +274,7 @@ public class Camera2D {
 		
 		for(int i = 0 ; i < 5 ;i++) {
 			
-			if(player.foodInv[i]!=null) {
+			if(Player.foodInv[i]!=null) {
 				g.setColor(Color.GRAY.darker());
 				g.fillOval(251+i*60,55,32,24);
 				
@@ -251,9 +285,9 @@ public class Camera2D {
 				
 				if(3*Math.sin(angle/5-Math.PI*i/5)-2>0) {
 					
-					g.drawImage(player.foodInv[i].sprite32,251+i*60,(int)(45-(3*Math.sin(angle/5-Math.PI*i/5)-2)*15),null);
+					g.drawImage(Player.foodInv[i].sprite32,251+i*60,(int)(45-(3*Math.sin(angle/5-Math.PI*i/5)-2)*15),null);
 				}else {
-					g.drawImage(player.foodInv[i].sprite32,251+i*60,45,null);
+					g.drawImage(Player.foodInv[i].sprite32,251+i*60,45,null);
 				}
 				}
 			}
@@ -262,11 +296,41 @@ public class Camera2D {
 		
 		
 		
-		g.setColor(Color.DARK_GRAY);
+		/*g.setColor(Color.DARK_GRAY);
 		g.fillOval(708, 454, 40, 40);
 		g.setColor(Color.getHSBColor(230f, 54.5f, 82.75f));
 		g.fillOval(708, 452, 40, 40);
-		g.drawImage(Player.currentWeapon.sprite,712,456, null);
+		g.drawImage(Player.currentWeapon.sprite,712,456, null);*/
+		
+		// slot background
+		g.setColor(Color.DARK_GRAY);
+		g.fillOval(708, 454, 40, 40);
+
+		// slot foreground
+		g.setColor(Color.getHSBColor(230f, 54.5f, 82.75f));
+		g.fillOval(708, 452, 40, 40);
+
+		// weapon icon
+		g.drawImage(Player.currentWeapon.sprite, 712, 456, null);
+
+		// ---- damage text ----
+		String dmgText = String.valueOf("DMG:"+Player.currentWeapon.damage);
+
+		FontMetrics fm = g.getFontMetrics();
+
+		int centerX = 708 + 20; // center of circle
+		int textX = centerX - fm.stringWidth(dmgText) / 2;
+		int textY = 452 - 4; // slightly above the circle
+
+		// optional shadow for readability
+		g.setColor(Color.BLACK);
+		g.drawString(dmgText, textX + 1, textY + 1);
+
+		// main text
+		g.setColor(Color.RED);
+		g.drawString(dmgText, textX, textY);
+		g.drawImage(HUD.heartFull, textX + 35,textY-13,null);
+
 		
 		this.hud.draw((java.awt.Graphics2D)g, player);
 		
