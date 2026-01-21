@@ -54,24 +54,6 @@ public class Vector2 {
 		return result;
 	}
 	
-	public void multiply(Matrix2 matrix) {
-		double tempX=this.x;
-		double tempY=this.y;
-		
-		this.x = tempX*matrix.a11 + tempY*matrix.a12;
-		this.y = tempX*matrix.a21 + tempY*matrix.a22;
-	}
-	
-	public void rotate(Matrix2 matrix,Vector2 point) {
-		double tempX = this.x;
-		double tempY = this.y;
-		double pointX = point.x;
-		double pointY = point.y;
-		
-		this.x = (tempX-pointX)*matrix.a11 + (tempY-pointY)*matrix.a12 + pointX;
-		this.y = (tempX-pointX)*matrix.a21 + (tempY-pointY)*matrix.a22 + pointY;
-	}
-	
 	public String toString() {
 		return "[ "+this.x+" , "+this.y+" ]";
 	}

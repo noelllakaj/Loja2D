@@ -25,7 +25,7 @@ public class Entity {
 	
 	directions direction = directions.down;
 	int currentFrame=0; 
-	int idleFPF = 30,walkingFPF = 30,deathFPF = 120;
+	int idleFPF = 30,walkingFPF = 30,deathFPF = 100;
 	int idleCFPF=0,walkingCFPF=0,deathCFPF=0;
 	
 	BufferedImage idleAnimation[][];

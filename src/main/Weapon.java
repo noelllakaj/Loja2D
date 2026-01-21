@@ -73,10 +73,10 @@ public class Weapon {
     	int offset1 = 5;
     	angle += 0.01;
     	switch(player.direction.ordinal()) {
-    	case 0 : this.targetPosition.setEqual(player.position.add(new Vector2(0,offset+offset1*Math.sin(angle)))); break;
-    	case 1 : this.targetPosition.setEqual(player.position.add(new Vector2(offset,offset1*Math.sin(angle)))); break;
-    	case 2 : this.targetPosition.setEqual(player.position.add(new Vector2(0,-offset+offset1*Math.sin(angle)))); break;
-    	case 3 : this.targetPosition.setEqual(player.position.add(new Vector2(-offset,offset1*Math.sin(angle)))); break;
+    	case 0 : this.targetPosition.setEqual(Player.position.add(new Vector2(0,offset+offset1*Math.sin(angle)))); break;
+    	case 1 : this.targetPosition.setEqual(Player.position.add(new Vector2(offset,offset1*Math.sin(angle)))); break;
+    	case 2 : this.targetPosition.setEqual(Player.position.add(new Vector2(0,-offset+offset1*Math.sin(angle)))); break;
+    	case 3 : this.targetPosition.setEqual(Player.position.add(new Vector2(-offset,offset1*Math.sin(angle)))); break;
     	}
     }
 }

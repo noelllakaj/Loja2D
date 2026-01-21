@@ -17,7 +17,6 @@ public class Camera2D {
 	boolean followingPlayer = true;
 	Vector2 edgeToCenter = new Vector2();
 	int tileSize = 32;
-	Matrix2 startEnd;
 	BufferedImage renderedFrame;
 	static BufferedImage[] tileSprites = new BufferedImage[128];
 	HUD hud = new HUD();

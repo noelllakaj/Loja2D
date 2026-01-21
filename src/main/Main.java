@@ -37,7 +37,7 @@ public class Main {
 		Weapon.generateWeapons(map, Food.foodArray);
 		
 		
-		int targetFPS = 144;
+		int targetFPS = 200;
 		long optimalTime = 1_000_000_000 / targetFPS;
 
 		//long lastTime = System.nanoTime();

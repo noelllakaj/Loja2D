@@ -64,7 +64,7 @@ public class SaveManager {
             
             writer.close();
 
-            System.out.println("Saved to: " + file.getAbsolutePath());
+           // System.out.println("Saved to: " + file.getAbsolutePath());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -149,7 +149,7 @@ public class SaveManager {
         }
 
         reader.close();
-        System.out.println("Game loaded successfully!");
+        //System.out.println("Game loaded successfully!");
 
     } catch (IOException e) {
         e.printStackTrace();
